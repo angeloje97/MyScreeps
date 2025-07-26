@@ -19,12 +19,15 @@ const roleUpgrader = {
     run: (creep) => {
         const maxCarry = creep.body.filter((part) => part.type === CARRY).length * 50;
         if (creep.store[RESOURCE_ENERGY] == 0) {
-            creep.memory.status = types_1.Status.Harvesting;
+            if (creep.memory.status != types_1.Status.Harvesting)
+                creep.memory.status = types_1.Status.Harvesting;
             creep.say("Harvesting");
         }
         if (creep.store[RESOURCE_ENERGY] == maxCarry) {
-            creep.memory.status = types_1.Status.Upgrading;
-            creep.say("Upgrading");
+            if (creep.memory.status != types_1.Status.Upgrading) {
+                creep.memory.status = types_1.Status.Upgrading;
+                creep.say("Upgrading");
+            }
         }
         const status = creep.memory.status;
         if (status == types_1.Status.Upgrading) {

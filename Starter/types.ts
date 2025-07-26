@@ -2,9 +2,11 @@ declare global {
   interface CreepMemory {
     role: string;
     status?: Status;
+    spawn?: string;
   }
 }
 
+//#region Creep Type
 export type CreepType = {
   body: BodyPartConstant[];
   name: string;
@@ -19,12 +21,15 @@ export const accumulatedCreepType = (
 ): CreepType => {
   return creepList[0];
 };
+//#endregion
 
 //#region Enums
 
 export enum Status {
+  None,
   Harvesting,
   Upgrading,
+  Building,
 }
 
 //#endregion
