@@ -1,6 +1,7 @@
 declare global {
   interface CreepMemory {
     role: string;
+    index?: number;
     status?: Status;
     spawn?: string;
   }
@@ -30,6 +31,7 @@ export enum Status {
   Harvesting,
   Upgrading,
   Building,
+  Hauling,
 }
 
 //#endregion

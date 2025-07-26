@@ -9,8 +9,24 @@ const spawnCreep = (spawn, creepType) => {
     const currentCreeps = lodash_1.default.filter(Game.creeps, (creep) => creep.memory.role == memory.role);
     if (currentCreeps.length >= count)
         return;
+    //#region Determining the Index
+    let index = 0;
+    while (index < currentCreeps.length) {
+        let alreadyExists = false;
+        for (const creep of currentCreeps) {
+            if (creep.memory.index == index) {
+                alreadyExists = true;
+                break;
+            }
+        }
+        if (!alreadyExists) {
+            break;
+        }
+        index++;
+    }
+    //#endregion
     spawn.spawnCreep(body, name + Game.time, {
-        memory: Object.assign(Object.assign({}, memory), { spawn: spawn.name }),
+        memory: Object.assign(Object.assign({}, memory), { spawn: spawn.name, index }),
     });
 };
 module.exports = {
