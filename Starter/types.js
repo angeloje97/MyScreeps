@@ -2,7 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Status = exports.accumulatedCreepType = void 0;
 const accumulatedCreepType = (phase, creepList) => {
-    return creepList[0];
+    for (const creepType of creepList) {
+        if (creepType.phase == phase) {
+            return creepType;
+        }
+    }
+    return null;
 };
 exports.accumulatedCreepType = accumulatedCreepType;
 //#endregion

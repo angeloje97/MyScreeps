@@ -19,8 +19,13 @@ export type CreepType = {
 export const accumulatedCreepType = (
   phase: number,
   creepList: CreepType[]
-): CreepType => {
-  return creepList[0];
+): CreepType | null => {
+  for(const creepType of creepList){
+    if(creepType.phase == phase){
+      return creepType;
+    }
+  }
+  return null;
 };
 //#endregion
 

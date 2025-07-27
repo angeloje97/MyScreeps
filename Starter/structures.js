@@ -1,6 +1,5 @@
 "use strict";
-const handleExtensions = () => {
-    const spawn = Game.spawns["Spawn1"];
+const handleExtensions = (spawn) => {
     const room = spawn.room;
     const maxContainers = 3;
     const struct = STRUCTURE_EXTENSION;
@@ -12,8 +11,7 @@ const handleExtensions = () => {
         room.createConstructionSite(pos.x - i - 1, pos.y - i - 1, struct);
     }
 };
-const handleRoads = () => {
-    const spawn = Game.spawns["Spawn1"];
+const handleRoads = (spawn) => {
     const sources = spawn.room.find(FIND_SOURCES);
     const controller = spawn.room.controller;
     for (const source of sources) {
@@ -33,15 +31,14 @@ const handleRoads = () => {
         }
     }
 };
-const handleTower = () => {
-    const spawn = Game.spawns['Spawn1'];
+const handleTower = (spawn) => {
     spawn.room.createConstructionSite(spawn.pos.x + 3, spawn.pos.y, STRUCTURE_TOWER);
 };
 const structureHandler = {
-    run: () => {
-        handleExtensions();
-        handleRoads();
-        handleTower();
+    run: (spawn) => {
+        handleExtensions(spawn);
+        handleRoads(spawn);
+        handleTower(spawn);
     },
 };
 module.exports = structureHandler;

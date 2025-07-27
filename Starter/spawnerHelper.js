@@ -5,8 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
 const spawnCreep = (spawn, creepType) => {
+    if (creepType == null)
+        return;
     const { count, body, name, memory } = creepType;
-    const currentCreeps = lodash_1.default.filter(Game.creeps, (creep) => creep.memory.role == memory.role);
+    const currentCreeps = lodash_1.default.filter(Game.creeps, (creep) => creep.memory.role == memory.role && creep.memory.spawn == spawn.name);
     if (currentCreeps.length >= count)
         return;
     //#region Determining the Index

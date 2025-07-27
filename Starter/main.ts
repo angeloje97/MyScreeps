@@ -1,9 +1,7 @@
 import { CreepType } from "./types";
-const roleHarvester = require("role.harvester");
-const roleUpgrader = require("role.upgrader");
-const roleBuilder = require("./role.builder");
 const structureHandler = require("structures");
 const roleGrunt = require("./role.grunt")
+const roleKnight = require("./role.knight")
 
 export function loop(): void {
   for (const name in Memory.creeps) {
@@ -12,30 +10,22 @@ export function loop(): void {
     }
   }
 
-  structureHandler.run();
+  for(const spawn of Object.values(Game.spawns)){
+    structureHandler.run(spawn);
+    roleKnight.handleKnights(spawn);
+    roleGrunt.handleGrunt(spawn);
+  }
 
-  // roleUpgrader.handleUpgraders();
-  // roleBuilder.handleBuilders();
-  // roleHarvester.handleHarvesters();
-  roleGrunt.handleGrunt();
+  const runners = {
+    grunt: roleGrunt.run,
+    knight: roleKnight.run
+  }
 
   for (const name in Game.creeps) {
     const creep = Game.creeps[name];
 
-    if(creep.memory.role == 'grunt'){
-      roleGrunt.run(creep);
+    if(name in runners){
+      runners[name](creep);
     }
-
-    // if (creep.memory.role == "harvester") {
-    //   roleHarvester.run(creep);
-    // }
-
-    // if (creep.memory.role == "upgrader") {
-    //   roleUpgrader.run(creep);
-    // }
-
-    // if (creep.memory.role == "builder") {
-    //   roleBuilder.run(creep);
-    // }
   }
 }

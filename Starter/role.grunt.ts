@@ -15,13 +15,12 @@ const gruntTypes: CreepType[] = [
         }
     },
     {
-        phase: 1,
-        count: 4,
+        phase: 2,
+        count: 5,
         name: "Grunt",
-        body: [WORK, WORK, CARRY, CARRY, MOVE],
+        body: [WORK, CARRY, MOVE],
         memory: {
             role: "grunt",
-            status: Status.Harvesting
         }
     }
 ]
@@ -69,7 +68,6 @@ const roleGrunt = {
             let sourceIndex = 0;
             if(index){
                 sourceIndex = index % sources.length;
-                console.log(index);
             }
             if(creep.harvest(sources[sourceIndex]) == ERR_NOT_IN_RANGE){
                 creep.moveTo(sources[sourceIndex])
@@ -93,8 +91,12 @@ const roleGrunt = {
         // #region Building
         if(creep.memory.status == Status.Building){
             if(sites.length > 0){
-                if(creep.build(sites[0]) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(sites[0])
+                const closesSite = creep.pos.findClosestByRange(sites);
+
+                if (closesSite) {
+                    if (creep.build(closesSite) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(closesSite);
+                    }
                 }
             }else{
                 creep.memory.status = Status.Upgrading;
@@ -115,8 +117,8 @@ const roleGrunt = {
         //#endregion
     },
 
-    handleGrunt: () => {
-        spawnCreep(Game.spawns['Spawn1'], accumulatedCreepType(phase, gruntTypes));
+    handleGrunt: (spawn: StructureSpawn) => {
+        spawnCreep(spawn, accumulatedCreepType(phase, gruntTypes));
     }
 }
 

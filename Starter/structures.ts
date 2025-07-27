@@ -1,5 +1,4 @@
-const handleExtensions = (): void => {
-  const spawn = Game.spawns["Spawn1"];
+const handleExtensions = (spawn: StructureSpawn): void => {
   const room = spawn.room;
   const maxContainers = 3;
 
@@ -14,8 +13,7 @@ const handleExtensions = (): void => {
   }
 };
 
-const handleRoads = (): void => {
-  const spawn = Game.spawns["Spawn1"];
+const handleRoads = (spawn: StructureSpawn): void => {
   const sources = spawn.room.find(FIND_SOURCES);
   const controller = spawn.room.controller;
 
@@ -40,17 +38,15 @@ const handleRoads = (): void => {
   }
 };
 
-const handleTower = (): void => {
-  const spawn = Game.spawns['Spawn1']
-
+const handleTower = (spawn: StructureSpawn): void => {
   spawn.room.createConstructionSite(spawn.pos.x + 3, spawn.pos.y, STRUCTURE_TOWER)
 }
 
 const structureHandler = {
-  run: () => {
-    handleExtensions();
-    handleRoads();
-    handleTower();
+  run: (spawn: StructureSpawn) => {
+    handleExtensions(spawn);
+    handleRoads(spawn);
+    handleTower(spawn);
   },
 };
 
