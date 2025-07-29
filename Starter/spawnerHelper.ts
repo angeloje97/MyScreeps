@@ -1,9 +1,37 @@
-import { CreepType } from "./types";
+import { accumulatedCreepType, CreepType } from "./types";
 import _ from "lodash";
 
-const spawnCreep = (spawn: StructureSpawn, creepType: CreepType): void => {
+const getNonFullTargets = (creep: Creep) => {
+    const targets = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_TOWER];
+    return creep.room.find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            let isTarget = true;
+            for (const target of targets) {
+                if (structure.structureType == target) {
+                    if (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+    });
+};
+
+let useSub = false;
+let subPhase = 0;
+const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void => {
+
+  let phase = spawn.room.controller!.level;
+
+  if(useSub){
+    phase = subPhase;
+  }
+
+  const creepType = accumulatedCreepType(phase, creepTypes)
+
   if(creepType == null) return;
-  const { count, body, name, memory } = creepType;
+  const { count, body, name, memory, substitution } = creepType;
 
   const currentCreeps = _.filter(
     Game.creeps,
@@ -33,13 +61,23 @@ const spawnCreep = (spawn: StructureSpawn, creepType: CreepType): void => {
   }
 
   //#endregion
+  let result = spawn.spawnCreep(body, name + Game.time, {
+      memory: { ...memory, spawn: spawn.name, index  },
+    })
 
-  spawn.spawnCreep(body, name + Game.time, {
-    memory: { ...memory, spawn: spawn.name, index  },
-  });
+  if(result == ERR_NOT_ENOUGH_ENERGY && substitution){
+    subPhase = substitution;
+
+    useSub = true;
+
+    spawnCreep(spawn, creepTypes)
+
+    useSub = false;
+  }
 };
 
 
 module.exports = {
-  spawnCreep
+  spawnCreep,
+  getNonFullTargets,
 };

@@ -14,17 +14,24 @@ export type CreepType = {
   count: number;
   phase: number;
   memory: CreepMemory;
+
+  
+  substitution?: number;
+
 };
 
 export const accumulatedCreepType = (
   phase: number,
   creepList: CreepType[]
 ): CreepType | null => {
+
+
   for(const creepType of creepList){
     if(creepType.phase == phase){
       return creepType;
     }
   }
+
   return null;
 };
 //#endregion
@@ -37,6 +44,7 @@ export enum Status {
   Upgrading,
   Building,
   Hauling,
+  Helping,
 }
 
 //#endregion

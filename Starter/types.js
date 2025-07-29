@@ -19,5 +19,6 @@ var Status;
     Status[Status["Upgrading"] = 2] = "Upgrading";
     Status[Status["Building"] = 3] = "Building";
     Status[Status["Hauling"] = 4] = "Hauling";
+    Status[Status["Helping"] = 5] = "Helping";
 })(Status || (exports.Status = Status = {}));
 //#endregion

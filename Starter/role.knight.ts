@@ -7,7 +7,7 @@ const { spawnCreep } = require("spawnerHelper");
 
 const knightTypes: CreepType[] = [
     {
-        phase: 1,
+        phase: 2,
         count: 2,
         name: "Knight",
         body: [MOVE, ATTACK, MOVE, ATTACK],

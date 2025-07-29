@@ -1,12 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
-const { spawnCreep } = require("spawnerHelper");
-const phase = 1;
+const { spawnCreep, getNonFullTargets } = require("spawnerHelper");
 const gruntTypes = [
     {
         phase: 1,
-        count: 5,
+        count: 4,
         name: "Grunt",
         body: [WORK, CARRY, MOVE],
         memory: {
@@ -15,32 +14,25 @@ const gruntTypes = [
     },
     {
         phase: 2,
-        count: 5,
+        count: 4,
+        substitution: 1,
         name: "Grunt",
-        body: [WORK, CARRY, MOVE],
+        body: [WORK, WORK, CARRY, CARRY, MOVE],
+        memory: {
+            role: "grunt",
+        }
+    },
+    {
+        phase: 3,
+        count: 3,
+        substitution: 2,
+        name: "Grunt",
+        body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
         memory: {
             role: "grunt",
         }
     }
 ];
-//#region NonFullTowers
-const getNonFullTargets = (creep) => {
-    const targets = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_TOWER];
-    return creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            let isTarget = true;
-            for (const target of targets) {
-                if (structure.structureType == target) {
-                    if (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        },
-    });
-};
-//#endregion
 const roleGrunt = {
     run: (creep) => {
         const isEmpty = creep.store[RESOURCE_ENERGY] == 0;
@@ -62,14 +54,30 @@ const roleGrunt = {
             if (index) {
                 sourceIndex = index % sources.length;
             }
-            if (creep.harvest(sources[sourceIndex]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[sourceIndex]);
+            const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
+                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()
+            });
+            if (droppedEnergy.length == 0) {
+                if (creep.harvest(sources[sourceIndex]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(sources[sourceIndex]);
+                }
+            }
+            else {
+                const closestEnergy = creep.pos.findClosestByRange(droppedEnergy);
+                if (closestEnergy) {
+                    if (creep.pickup(closestEnergy) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(closestEnergy);
+                    }
+                }
             }
         }
         //#endregion
         //#region Hauling
         if (creep.memory.status == types_1.Status.Hauling) {
-            if (nonFullTowers.length > 0) {
+            const haulers = creep.room.find(FIND_MY_CREEPS, {
+                filter: c => c.memory.role == 'hauler'
+            });
+            if (nonFullTowers.length > 0 && haulers.length == 0) {
                 if (creep.transfer(nonFullTowers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(nonFullTowers[0]);
                 }
@@ -105,7 +113,7 @@ const roleGrunt = {
         //#endregion
     },
     handleGrunt: (spawn) => {
-        spawnCreep(spawn, (0, types_1.accumulatedCreepType)(phase, gruntTypes));
+        spawnCreep(spawn, gruntTypes);
     }
 };
 module.exports = roleGrunt;
