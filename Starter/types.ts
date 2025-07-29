@@ -1,16 +1,16 @@
 declare global {
   interface CreepMemory {
-    role: string;
+    role: Role;
     index?: number;
     status?: Status;
     spawn?: string;
+    phase?: number;
   }
 }
 
 //#region Creep Type
 export type CreepType = {
   body: BodyPartConstant[];
-  name: string;
   count: number;
   phase: number;
   memory: CreepMemory;
@@ -45,6 +45,15 @@ export enum Status {
   Building,
   Hauling,
   Helping,
+}
+
+export enum Role {
+  Grunt,
+  Hauler,
+  Miner,
+  Upgrader,
+  Knight,
+  Archer
 }
 
 //#endregion

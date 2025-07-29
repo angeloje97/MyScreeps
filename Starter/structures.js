@@ -9,6 +9,10 @@ const handleExtensions = (spawn) => {
         room.createConstructionSite(pos.x - i - 1, pos.y + i + 1, struct);
         room.createConstructionSite(pos.x + i + 1, pos.y - i - 1, struct);
         room.createConstructionSite(pos.x - i - 1, pos.y - i - 1, struct);
+        room.createConstructionSite(pos.x + i + 1, pos.y, struct);
+        room.createConstructionSite(pos.x - i - 1, pos.y, struct);
+        room.createConstructionSite(pos.x, pos.y + i + 1, struct);
+        room.createConstructionSite(pos.x, pos.y - i - 1, struct);
     }
 };
 const handleRoads = (spawn) => {
@@ -52,7 +56,7 @@ const handleRoads = (spawn) => {
         }
     };
     //#endregion
-    // handleLevel2();
+    handleLevel2();
     // handleLevel3();
 };
 const structureHandler = {

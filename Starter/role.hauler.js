@@ -1,15 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
-const { spawnCreep, getNonFullTargets } = require("./spawnerHelper");
+const { spawnCreep, getNonFullTargets } = require("general");
 const haulerTypes = [
     {
         phase: 2,
         count: 1,
-        name: "Hauler",
         body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
         memory: {
-            role: "hauler",
+            role: types_1.Role.Hauler,
             status: types_1.Status.Harvesting,
         },
     },
@@ -17,10 +16,9 @@ const haulerTypes = [
         phase: 3,
         count: 1,
         substitution: 2,
-        name: "Hauler",
         body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
         memory: {
-            role: "hauler",
+            role: types_1.Role.Hauler,
             status: types_1.Status.Harvesting,
         },
     }
@@ -59,7 +57,7 @@ const roleHauler = {
         if (creep.memory.status == types_1.Status.Helping) {
             const otherCreeps = creep.room.find(FIND_MY_CREEPS, {
                 filter: (c) => {
-                    if (c.memory.role != 'upgrader')
+                    if (c.memory.role != types_1.Role.Upgrader)
                         return false;
                     const moreThanHalf = c.store.getFreeCapacity() <= c.store.getCapacity() / 2;
                     if (moreThanHalf)

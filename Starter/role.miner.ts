@@ -1,16 +1,15 @@
 import { run } from "node:test";
-import { CreepType, accumulatedCreepType } from "./types";
+import { CreepType, Role, accumulatedCreepType } from "./types";
 
-const {spawnCreep} = require('spawnerHelper')
+const {spawnCreep} = require('general')
 
 const minerTypes: CreepType[] =  [
     {
         phase: 2,
         count: 2,
         body: [WORK, WORK, WORK, WORK, MOVE],
-        name: "Miner",
         memory: {
-            role: "miner"
+            role: Role.Miner
         }
     },
     {
@@ -18,9 +17,17 @@ const minerTypes: CreepType[] =  [
         count: 2,
         substitution: 2,
         body: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE],
-        name: "Miner",
         memory: {
-            role: "miner"
+            role: Role.Miner
+        }
+    },
+    {
+        phase: 4,
+        count: 2,
+        substitution: 3,
+        body: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE],
+        memory: {
+            role: Role.Miner
         }
     }
 ]

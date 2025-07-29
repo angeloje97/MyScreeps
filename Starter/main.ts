@@ -1,4 +1,4 @@
-import { CreepType } from "./types";
+import { Role } from "./types";
 const structureHandler = require("structures");
 const roleGrunt = require("./role.grunt")
 const roleKnight = require("./role.knight")
@@ -33,20 +33,20 @@ export function loop(): void {
   for (const name in Game.creeps) {
     const creep = Game.creeps[name];
 
-    if(creep.memory.role == 'grunt')
+    if(creep.memory.role == Role.Grunt)
       roleGrunt.run(creep)
 
-    if(creep.memory.role == 'knight')
-      roleKnight.run(creep);
-
-    if(creep.memory.role == 'miner')
-      roleMiner.run(creep)
-
-    if(creep.memory.role == 'upgrader')
-      roleUpgrader.run(creep)
-
-    if(creep.memory.role == 'hauler'){
+    if(creep.memory.role == Role.Hauler){
       roleHauler.run(creep)
     }
+
+    if(creep.memory.role == Role.Miner)
+      roleMiner.run(creep)
+
+    if(creep.memory.role == Role.Upgrader)
+      roleUpgrader.run(creep)
+
+    if(creep.memory.role == Role.Knight)
+      roleKnight.run(creep);
   }
 }

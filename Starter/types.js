@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Status = exports.accumulatedCreepType = void 0;
+exports.Role = exports.Status = exports.accumulatedCreepType = void 0;
 const accumulatedCreepType = (phase, creepList) => {
     for (const creepType of creepList) {
         if (creepType.phase == phase) {
@@ -21,4 +21,13 @@ var Status;
     Status[Status["Hauling"] = 4] = "Hauling";
     Status[Status["Helping"] = 5] = "Helping";
 })(Status || (exports.Status = Status = {}));
+var Role;
+(function (Role) {
+    Role[Role["Grunt"] = 0] = "Grunt";
+    Role[Role["Hauler"] = 1] = "Hauler";
+    Role[Role["Miner"] = 2] = "Miner";
+    Role[Role["Upgrader"] = 3] = "Upgrader";
+    Role[Role["Knight"] = 4] = "Knight";
+    Role[Role["Archer"] = 5] = "Archer";
+})(Role || (exports.Role = Role = {}));
 //#endregion

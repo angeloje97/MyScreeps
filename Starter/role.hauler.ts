@@ -1,15 +1,14 @@
-import { CreepType, Status } from "./types";
+import { CreepType, Role, Status } from "./types";
 import _ from "lodash";
-const {spawnCreep, getNonFullTargets} = require("./spawnerHelper")
+const {spawnCreep, getNonFullTargets} = require("general")
 
 const haulerTypes: CreepType[] = [
     {
         phase: 2,
         count: 1,
-        name: "Hauler",
         body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
         memory: {
-            role: "hauler",
+            role: Role.Hauler,
             status: Status.Harvesting,
         },
     },
@@ -17,10 +16,9 @@ const haulerTypes: CreepType[] = [
         phase: 3,
         count: 1,
         substitution: 2,
-        name: "Hauler",
         body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
         memory: { 
-            role: "hauler",
+            role: Role.Hauler,
             status: Status.Harvesting,
         },
     }
@@ -67,7 +65,7 @@ const roleHauler = {
         if(creep.memory.status == Status.Helping){
             const otherCreeps = creep.room.find(FIND_MY_CREEPS, {
                 filter: (c) => {
-                    if(c.memory.role != 'upgrader') return false;
+                    if(c.memory.role != Role.Upgrader) return false;
                     const moreThanHalf = c.store.getFreeCapacity() <= c.store.getCapacity() / 2;
                     if(moreThanHalf) return false;
 

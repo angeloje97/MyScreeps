@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const { spawnCreep } = require("spawnerHelper");
+const types_1 = require("./types");
+const { spawnCreep } = require("general");
 const knightTypes = [
     {
         phase: 2,
         count: 2,
-        name: "Knight",
         body: [MOVE, ATTACK, MOVE, ATTACK],
         memory: {
-            role: "knight",
+            role: types_1.Role.Knight,
         }
     }
 ];

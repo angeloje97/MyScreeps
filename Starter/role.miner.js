@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const { spawnCreep } = require('spawnerHelper');
+const types_1 = require("./types");
+const { spawnCreep } = require('general');
 const minerTypes = [
     {
         phase: 2,
         count: 2,
         body: [WORK, WORK, WORK, WORK, MOVE],
-        name: "Miner",
         memory: {
-            role: "miner"
+            role: types_1.Role.Miner
         }
     },
     {
@@ -16,9 +16,17 @@ const minerTypes = [
         count: 2,
         substitution: 2,
         body: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE],
-        name: "Miner",
         memory: {
-            role: "miner"
+            role: types_1.Role.Miner
+        }
+    },
+    {
+        phase: 4,
+        count: 2,
+        substitution: 3,
+        body: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE],
+        memory: {
+            role: types_1.Role.Miner
         }
     }
 ];

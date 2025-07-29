@@ -1,36 +1,43 @@
 import { spawn } from "child_process";
-import { accumulatedCreepType, CreepType, Status } from "./types";
-const { spawnCreep, getNonFullTargets } = require("spawnerHelper");
+import { accumulatedCreepType, CreepType, Role, Status } from "./types";
+const { spawnCreep, getNonFullTargets } = require("general");
 
 
 const gruntTypes: CreepType[] = [
     {
         phase: 1,
         count: 4,
-        name: "Grunt",
         body: [WORK, CARRY, MOVE],
         memory: {
-            role: "grunt",
+            role: Role.Grunt,
         }
     },
     {
         phase: 2,
         count: 4,
         substitution: 1,
-        name: "Grunt",
-        body: [WORK, WORK, CARRY, CARRY, MOVE],
+        body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE],
         memory: {
-            role: "grunt",
+            role: Role.Grunt,
         }
     },
     {
         phase: 3,
         count: 3,
         substitution: 2,
-        name: "Grunt",
-        body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+        body: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
         memory: {
-            role: "grunt",
+            role: Role.Grunt,
+        }
+    },
+
+    {
+        phase: 4,
+        count: 3,
+        substitution: 2,
+        body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+        memory: {
+            role: Role.Grunt,
         }
     }
 ]
@@ -43,7 +50,6 @@ const roleGrunt = {
 
         const nonFullTowers = getNonFullTargets(creep);
         const sources = creep.room.find(FIND_SOURCES)
-        const sites = creep.room.find(FIND_CONSTRUCTION_SITES)
         const controller = creep.room.controller;
 
         const {index} = creep.memory
@@ -76,8 +82,7 @@ const roleGrunt = {
                 if(closestEnergy){
                     if(creep.pickup(closestEnergy) == ERR_NOT_IN_RANGE){
                         creep.moveTo(closestEnergy)
-                }
-
+                    }
                 }
             }
 
@@ -88,7 +93,7 @@ const roleGrunt = {
         if(creep.memory.status == Status.Hauling){
             const haulers = creep.room.find(FIND_MY_CREEPS, 
                 {
-                    filter: c => c.memory.role == 'hauler'
+                    filter: c => c.memory.role == Role.Hauler
                 }
             )
 
@@ -105,8 +110,29 @@ const roleGrunt = {
 
         // #region Building
         if(creep.memory.status == Status.Building){
+            const prioritySites = [STRUCTURE_EXTENSION, STRUCTURE_ROAD]
+            const sites: ConstructionSite[] = [];
+
+            for(const prio of prioritySites){
+                const prioSite = creep.room.find(FIND_CONSTRUCTION_SITES, {
+                    filter: (site: ConstructionSite) => site.structureType == prio
+                })
+                const closest = creep.pos.findClosestByRange(prioSite);
+
+                if(closest){
+                    sites.push(closest)
+                }
+            }
+
+            const other = creep.room.find(FIND_CONSTRUCTION_SITES)
+            const closestOther = creep.pos.findClosestByPath(other);
+
+            if(closestOther){
+                sites.push(closestOther)
+            }
+
             if(sites.length > 0){
-                const closesSite = creep.pos.findClosestByRange(sites);
+                const closesSite = sites[0]
 
                 if (closesSite) {
                     if (creep.build(closesSite) == ERR_NOT_IN_RANGE) {

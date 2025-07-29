@@ -1,15 +1,14 @@
-import { accumulatedCreepType, CreepType, Status } from "./types";
+import { accumulatedCreepType, CreepType, Role, Status } from "./types";
 
-const {spawnCreep} = require("./spawnerHelper")
+const {spawnCreep} = require("general")
 
 const upgraderTypes: CreepType[] = [
     {
         phase: 2,
         count: 1,
-        name: "Upgrader",
         body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE],
         memory: {
-            role: 'upgrader'
+            role: Role.Upgrader
         }
     },
 
@@ -18,10 +17,9 @@ const upgraderTypes: CreepType[] = [
         count: 1,
         substitution: 2,
 
-        name: "Upgrader",
         body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE],
         memory: {
-            role: 'upgrader'
+            role: Role.Upgrader
         }
     }
 ]

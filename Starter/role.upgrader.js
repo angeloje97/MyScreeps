@@ -1,24 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const { spawnCreep } = require("./spawnerHelper");
+const types_1 = require("./types");
+const { spawnCreep } = require("general");
 const upgraderTypes = [
     {
         phase: 2,
         count: 1,
-        name: "Upgrader",
         body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE],
         memory: {
-            role: 'upgrader'
+            role: types_1.Role.Upgrader
         }
     },
     {
         phase: 3,
         count: 1,
         substitution: 2,
-        name: "Upgrader",
         body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE],
         memory: {
-            role: 'upgrader'
+            role: types_1.Role.Upgrader
         }
     }
 ];

@@ -32,6 +32,8 @@ const tower = {
     },
     handleTowers: (spawn:StructureSpawn) => {
         spawn.room.createConstructionSite(spawn.pos.x + 3, spawn.pos.y, STRUCTURE_TOWER)
+        spawn.room.createConstructionSite(spawn.pos.x - 3, spawn.pos.y, STRUCTURE_TOWER)
+
     }
 }
 

@@ -1,18 +1,17 @@
 import { run } from "node:test";
-import { accumulatedCreepType, CreepType } from "./types";
+import { accumulatedCreepType, CreepType, Role } from "./types";
 
 
-const { spawnCreep } = require("spawnerHelper");
+const { spawnCreep } = require("general");
 
 
 const knightTypes: CreepType[] = [
     {
         phase: 2,
         count: 2,
-        name: "Knight",
         body: [MOVE, ATTACK, MOVE, ATTACK],
         memory: {
-            role: "knight",
+            role: Role.Knight,
         }
     }
 ]
