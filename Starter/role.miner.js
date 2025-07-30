@@ -1,12 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
-const { spawnCreep } = require('general');
+const general_1 = require("./general");
 const minerTypes = [
     {
         phase: 2,
         count: 2,
-        body: [WORK, WORK, WORK, WORK, MOVE],
+        body: [
+            ...Array(5).fill(WORK),
+            ...Array(1).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Miner
         }
@@ -15,7 +18,10 @@ const minerTypes = [
         phase: 3,
         count: 2,
         substitution: 2,
-        body: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE],
+        body: [
+            ...Array(7).fill(WORK),
+            ...Array(2).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Miner
         }
@@ -24,7 +30,10 @@ const minerTypes = [
         phase: 4,
         count: 2,
         substitution: 3,
-        body: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE],
+        body: [
+            ...Array(11).fill(WORK),
+            ...Array(4).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Miner
         }
@@ -42,7 +51,7 @@ const roleMiner = {
         }
     },
     handleMiner: (spawn) => {
-        spawnCreep(spawn, minerTypes);
+        (0, general_1.spawnCreep)(spawn, minerTypes);
     },
 };
 module.exports = roleMiner;

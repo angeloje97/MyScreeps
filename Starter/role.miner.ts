@@ -1,13 +1,16 @@
 import { run } from "node:test";
 import { CreepType, Role, accumulatedCreepType } from "./types";
 
-const {spawnCreep} = require('general')
+import { spawnCreep, getNonFullTargets } from "./general"
 
 const minerTypes: CreepType[] =  [
     {
         phase: 2,
         count: 2,
-        body: [WORK, WORK, WORK, WORK, MOVE],
+        body: [
+            ...Array(5).fill(WORK),
+            ...Array(1).fill(MOVE)
+        ],
         memory: {
             role: Role.Miner
         }
@@ -16,7 +19,10 @@ const minerTypes: CreepType[] =  [
         phase: 3,
         count: 2,
         substitution: 2,
-        body: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE],
+        body: [
+            ...Array(7).fill(WORK),
+            ...Array(2).fill(MOVE)
+        ],
         memory: {
             role: Role.Miner
         }
@@ -25,7 +31,10 @@ const minerTypes: CreepType[] =  [
         phase: 4,
         count: 2,
         substitution: 3,
-        body: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE],
+        body: [
+            ...Array(11).fill(WORK),
+            ...Array(4).fill(MOVE)
+        ],
         memory: {
             role: Role.Miner
         }

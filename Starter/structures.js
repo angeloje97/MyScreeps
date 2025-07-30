@@ -9,10 +9,10 @@ const handleExtensions = (spawn) => {
         room.createConstructionSite(pos.x - i - 1, pos.y + i + 1, struct);
         room.createConstructionSite(pos.x + i + 1, pos.y - i - 1, struct);
         room.createConstructionSite(pos.x - i - 1, pos.y - i - 1, struct);
-        room.createConstructionSite(pos.x + i + 1, pos.y, struct);
-        room.createConstructionSite(pos.x - i - 1, pos.y, struct);
-        room.createConstructionSite(pos.x, pos.y + i + 1, struct);
-        room.createConstructionSite(pos.x, pos.y - i - 1, struct);
+        room.createConstructionSite(pos.x + (i * 2) + 2, pos.y, struct);
+        room.createConstructionSite(pos.x - (i * 2) - 2, pos.y, struct);
+        room.createConstructionSite(pos.x, pos.y + (i * 2) + 2, struct);
+        room.createConstructionSite(pos.x, pos.y - (i * 2) - 2, struct);
     }
 };
 const handleRoads = (spawn) => {

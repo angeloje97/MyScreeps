@@ -2,7 +2,7 @@ import { run } from "node:test";
 import { accumulatedCreepType, CreepType, Role } from "./types";
 
 
-const { spawnCreep } = require("general");
+import { spawnCreep, getNonFullTargets } from "./general"
 
 
 const knightTypes: CreepType[] = [

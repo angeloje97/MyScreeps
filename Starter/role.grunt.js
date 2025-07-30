@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
-const { spawnCreep, getNonFullTargets } = require("general");
+const general_1 = require("./general");
 const gruntTypes = [
     {
         phase: 1,
         count: 4,
-        body: [WORK, CARRY, MOVE],
+        body: [
+            ...Array(1).fill(WORK),
+            ...Array(1).fill(CARRY),
+            ...Array(1).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Grunt,
         }
@@ -15,7 +19,11 @@ const gruntTypes = [
         phase: 2,
         count: 4,
         substitution: 1,
-        body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE],
+        body: [
+            ...Array(3).fill(WORK),
+            ...Array(2).fill(CARRY),
+            ...Array(3).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Grunt,
         }
@@ -24,16 +32,24 @@ const gruntTypes = [
         phase: 3,
         count: 3,
         substitution: 2,
-        body: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+        body: [
+            ...Array(4).fill(WORK),
+            ...Array(4).fill(CARRY),
+            ...Array(4).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Grunt,
         }
     },
     {
         phase: 4,
-        count: 3,
+        count: 2,
         substitution: 2,
-        body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+        body: [
+            ...Array(6).fill(WORK),
+            ...Array(6).fill(CARRY),
+            ...Array(8).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Grunt,
         }
@@ -43,7 +59,7 @@ const roleGrunt = {
     run: (creep) => {
         const isEmpty = creep.store[RESOURCE_ENERGY] == 0;
         const isFull = creep.store.getFreeCapacity() == 0;
-        const nonFullTowers = getNonFullTargets(creep);
+        const nonFullTowers = (0, general_1.getNonFullTargets)(creep);
         const sources = creep.room.find(FIND_SOURCES);
         const controller = creep.room.controller;
         const { index } = creep.memory;
@@ -60,7 +76,7 @@ const roleGrunt = {
                 sourceIndex = index % sources.length;
             }
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()
+                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity() * 3
             });
             if (droppedEnergy.length == 0) {
                 if (creep.harvest(sources[sourceIndex]) == ERR_NOT_IN_RANGE) {
@@ -105,7 +121,9 @@ const roleGrunt = {
                     sites.push(closest);
                 }
             }
-            const other = creep.room.find(FIND_CONSTRUCTION_SITES);
+            const other = creep.room.find(FIND_CONSTRUCTION_SITES, {
+                filter: (s) => !prioritySites.includes(s.structureType),
+            });
             const closestOther = creep.pos.findClosestByPath(other);
             if (closestOther) {
                 sites.push(closestOther);
@@ -134,7 +152,7 @@ const roleGrunt = {
         //#endregion
     },
     handleGrunt: (spawn) => {
-        spawnCreep(spawn, gruntTypes);
+        (0, general_1.spawnCreep)(spawn, gruntTypes);
     }
 };
 module.exports = roleGrunt;

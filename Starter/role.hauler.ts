@@ -1,12 +1,15 @@
 import { CreepType, Role, Status } from "./types";
 import _ from "lodash";
-const {spawnCreep, getNonFullTargets} = require("general")
+import { spawnCreep, getNonFullTargets } from "./general"
 
 const haulerTypes: CreepType[] = [
     {
         phase: 2,
         count: 1,
-        body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+        body: [
+            ...Array(6).fill(CARRY),
+            ...Array(5).fill(MOVE)
+        ],
         memory: {
             role: Role.Hauler,
             status: Status.Harvesting,
@@ -16,7 +19,23 @@ const haulerTypes: CreepType[] = [
         phase: 3,
         count: 1,
         substitution: 2,
-        body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
+        body: [
+            ...Array(10).fill(CARRY),
+            ...Array(6).fill(MOVE)
+        ],
+        memory: { 
+            role: Role.Hauler,
+            status: Status.Harvesting,
+        },
+    },
+    {
+        phase: 4,
+        count: 1,
+        substitution: 2,
+        body: [
+            ...Array(16).fill(CARRY),
+            ...Array(10).fill(MOVE)
+        ],
         memory: { 
             role: Role.Hauler,
             status: Status.Harvesting,
@@ -36,7 +55,7 @@ const roleHauler = {
 
         if(creep.memory.status == Status.Harvesting){
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()
+                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()*2
             })
 
             const closestEnergy = creep.pos.findClosestByRange(droppedEnergy)

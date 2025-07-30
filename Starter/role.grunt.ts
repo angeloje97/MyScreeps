@@ -1,13 +1,17 @@
 import { spawn } from "child_process";
 import { accumulatedCreepType, CreepType, Role, Status } from "./types";
-const { spawnCreep, getNonFullTargets } = require("general");
+import { spawnCreep, getNonFullTargets } from "./general"
 
 
 const gruntTypes: CreepType[] = [
     {
         phase: 1,
         count: 4,
-        body: [WORK, CARRY, MOVE],
+        body: [
+            ...Array(1).fill(WORK),
+            ...Array(1).fill(CARRY),
+            ...Array(1).fill(MOVE)
+        ],
         memory: {
             role: Role.Grunt,
         }
@@ -16,7 +20,11 @@ const gruntTypes: CreepType[] = [
         phase: 2,
         count: 4,
         substitution: 1,
-        body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE],
+        body: [
+            ...Array(3).fill(WORK),
+            ...Array(2).fill(CARRY),
+            ...Array(3).fill(MOVE)
+        ],
         memory: {
             role: Role.Grunt,
         }
@@ -25,7 +33,11 @@ const gruntTypes: CreepType[] = [
         phase: 3,
         count: 3,
         substitution: 2,
-        body: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+        body: [
+            ...Array(4).fill(WORK),
+            ...Array(4).fill(CARRY),
+            ...Array(4).fill(MOVE)
+        ],
         memory: {
             role: Role.Grunt,
         }
@@ -33,9 +45,13 @@ const gruntTypes: CreepType[] = [
 
     {
         phase: 4,
-        count: 3,
+        count: 2,
         substitution: 2,
-        body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+        body: [
+            ...Array(6).fill(WORK),
+            ...Array(6).fill(CARRY),
+            ...Array(8).fill(MOVE)
+        ],
         memory: {
             role: Role.Grunt,
         }
@@ -56,7 +72,7 @@ const roleGrunt = {
 
         if(isEmpty){
             creep.memory.status = Status.Harvesting;
-        }
+        }        
         else if (isFull){
             creep.memory.status = Status.Hauling;
         }
@@ -68,7 +84,7 @@ const roleGrunt = {
                 sourceIndex = index % sources.length;
             }
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()
+                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()*3
             })
 
 
@@ -110,7 +126,7 @@ const roleGrunt = {
 
         // #region Building
         if(creep.memory.status == Status.Building){
-            const prioritySites = [STRUCTURE_EXTENSION, STRUCTURE_ROAD]
+            const prioritySites: BuildableStructureConstant[] = [STRUCTURE_EXTENSION, STRUCTURE_ROAD]
             const sites: ConstructionSite[] = [];
 
             for(const prio of prioritySites){
@@ -124,7 +140,10 @@ const roleGrunt = {
                 }
             }
 
-            const other = creep.room.find(FIND_CONSTRUCTION_SITES)
+            const other = creep.room.find(FIND_CONSTRUCTION_SITES, {
+                filter: (s: ConstructionSite) => !prioritySites.includes(s.structureType),
+            })
+            
             const closestOther = creep.pos.findClosestByPath(other);
 
             if(closestOther){

@@ -1,7 +1,7 @@
 import { accumulatedCreepType, CreepType, Role } from "./types";
 import _ from "lodash";
 
-const getNonFullTargets = (creep: Creep) => {
+export const getNonFullTargets = (creep: Creep) => {
     const targets = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_TOWER];
     return creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
@@ -18,37 +18,121 @@ const getNonFullTargets = (creep: Creep) => {
     });
 };
 
+//#region Inventory Functions
+
+export const hasAllExtensionsBuilt = (spawn: StructureSpawn, phase: number | null = null): boolean => {
+    const EXTENSIONS_PER_LEVEL = [0, 0, 5, 10, 20, 30, 40, 50, 60]; // index = controller level
+    const room = spawn.room;
+
+    if(phase == null){
+      phase = room.controller?.level ?? 0;
+    }
+
+    const builtExtensions = room.find(FIND_STRUCTURES, {
+        filter: s => s.structureType === STRUCTURE_EXTENSION
+    }).length;
+
+    const maxExtensions = EXTENSIONS_PER_LEVEL[phase];
+
+    return builtExtensions >= maxExtensions;
+}
+
+export const allExtensionsFull = (spawn: StructureSpawn): boolean => {
+    const extensions = spawn.room.find(FIND_STRUCTURES, {
+        filter: s => s.structureType === STRUCTURE_EXTENSION
+    });
+    
+    const spawnFull = spawn.store.getFreeCapacity(RESOURCE_ENERGY) == 0;
+    if(!spawnFull) return false;
+
+    const extensionsFull= extensions.every(ext => ext.store.getFreeCapacity(RESOURCE_ENERGY) === 0);
+
+    return extensionsFull;
+};
+
+//#endregion
+
+//#region Creep Functions
+export const creepsExists = (spawn: StructureSpawn, roles: Role[]) => {
+  const foundRoles: Role[] = []
+  
+  const creeps = spawn.room.find(FIND_MY_CREEPS)
+
+  for(const creep of creeps){
+    if(!foundRoles.includes(creep.memory.role)){
+      foundRoles.push(creep.memory.role)
+    }
+  }
+
+  for(const role of roles){
+    if(!foundRoles.includes(role)){
+      return false;
+    }
+  }
+
+  return true;
+}
+//#endregion
 
 //#region Spawn Creep
 
 let useSub = false;
 let subPhase = 0;
-const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void => {
+export const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void => {
 
-  if(spawn.spawning){
-    return;
-  }
-
+  //#region Common Data
+  
   let phase = spawn.room.controller!.level;
-
+  
   if(useSub){
     phase = subPhase;
   }
-
+  
   const creepType = accumulatedCreepType(phase, creepTypes)
-
+  
   if(creepType == null) return;
-  const { count, body, memory, substitution } = creepType;
-
+  const { count, body, memory, substitution, phase: creepPhase } = creepType;
+  
   const name = Role[memory.role]
-
+  
   const currentCreeps = _.filter(
     Game.creeps,
     (creep) => creep.memory.role == memory.role && creep.memory.spawn == spawn.name
   );
 
-  if (currentCreeps.length >= count) return;
+  //#endregion
 
+  //#region Handle Replacing Creep
+  if (currentCreeps.length >= count){
+    let suicide = false;
+    for(const creep of currentCreeps){
+      if(creep.memory.phase! < phase){
+        const hasExtensions = hasAllExtensionsBuilt(spawn, creepPhase);
+        const fullResources = allExtensionsFull(spawn);
+
+        if(hasExtensions && fullResources){
+          creep.suicide();
+          suicide = true;
+          break;
+        }
+      }
+    }
+
+    if(! suicide){
+
+      if(substitution){
+        subPhase = substitution;
+        useSub = true;
+
+        spawnCreep(spawn, creepTypes)
+
+        useSub = false;
+      }
+    }
+    return;
+
+  }
+  //#endregion
 
   //#region Determining the Index
   let index = 0
@@ -70,11 +154,24 @@ const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void => {
   }
 
   //#endregion
+  
+  //#region Spawning Creep
   let result = spawn.spawnCreep(body, name + Game.time, {
-      memory: { ...memory, spawn: spawn.name, index, phase },
-    })
+    memory: { ...memory, spawn: spawn.name, index, phase },
+  })
+  //#endregion
 
+  //#region Handle Substitution
   if(result == ERR_NOT_ENOUGH_ENERGY && substitution){
+
+    const hasCreeps = creepsExists(spawn, [Role.Hauler, Role.Miner])
+    const hasExtensions = hasAllExtensionsBuilt(spawn, creepPhase);
+    if(hasCreeps && hasExtensions) return;
+
+    if(memory.role == Role.Grunt){
+      console.log(phase);
+    }
+
     subPhase = substitution;
 
     useSub = true;
@@ -82,12 +179,8 @@ const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void => {
     spawnCreep(spawn, creepTypes)
 
     useSub = false;
+    subPhase = 0;
   }
+  //#endregion
 };
 //#endregion
-
-
-module.exports = {
-  spawnCreep,
-  getNonFullTargets,
-};

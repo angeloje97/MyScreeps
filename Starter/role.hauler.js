@@ -1,12 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
-const { spawnCreep, getNonFullTargets } = require("general");
+const general_1 = require("./general");
 const haulerTypes = [
     {
         phase: 2,
         count: 1,
-        body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+        body: [
+            ...Array(6).fill(CARRY),
+            ...Array(5).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Hauler,
             status: types_1.Status.Harvesting,
@@ -16,7 +19,23 @@ const haulerTypes = [
         phase: 3,
         count: 1,
         substitution: 2,
-        body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
+        body: [
+            ...Array(10).fill(CARRY),
+            ...Array(6).fill(MOVE)
+        ],
+        memory: {
+            role: types_1.Role.Hauler,
+            status: types_1.Status.Harvesting,
+        },
+    },
+    {
+        phase: 4,
+        count: 1,
+        substitution: 2,
+        body: [
+            ...Array(16).fill(CARRY),
+            ...Array(10).fill(MOVE)
+        ],
         memory: {
             role: types_1.Role.Hauler,
             status: types_1.Status.Harvesting,
@@ -33,7 +52,7 @@ const roleHauler = {
         }
         if (creep.memory.status == types_1.Status.Harvesting) {
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()
+                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity() * 2
             });
             const closestEnergy = creep.pos.findClosestByRange(droppedEnergy);
             if (closestEnergy) {
@@ -43,7 +62,7 @@ const roleHauler = {
             }
         }
         if (creep.memory.status == types_1.Status.Hauling) {
-            const nonFullTargets = getNonFullTargets(creep);
+            const nonFullTargets = (0, general_1.getNonFullTargets)(creep);
             const closestSite = creep.pos.findClosestByRange(nonFullTargets);
             if (closestSite) {
                 if (creep.transfer(closestSite, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -77,7 +96,7 @@ const roleHauler = {
         }
     },
     handleHaulers: (spawn) => {
-        spawnCreep(spawn, haulerTypes);
+        (0, general_1.spawnCreep)(spawn, haulerTypes);
     }
 };
 module.exports = roleHauler;
