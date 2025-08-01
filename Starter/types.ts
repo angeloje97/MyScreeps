@@ -25,6 +25,7 @@ export type CreepType = {
   requiredCreeps?: Role[]
   substitution?: number;
   forAll?: boolean;
+  variableCount?: (spawn: StructureSpawn) => number;
 };
 
 export const accumulatedCreepType = (

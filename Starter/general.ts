@@ -100,8 +100,10 @@ export const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void
   const creepType = accumulatedCreepType(phase, creepTypes)
   
   if(creepType == null) return;
-  const { count, body, memory, substitution, phase: creepPhase } = creepType;
+  const { body, memory, substitution, phase: creepPhase } = creepType;
   
+  const count = creepType.variableCount ? creepType.variableCount(spawn) : creepType.count;
+
   const name = Role[memory.role]
   
   const currentCreeps = _.filter(

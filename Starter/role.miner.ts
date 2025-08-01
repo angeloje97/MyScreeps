@@ -3,6 +3,10 @@ import { CreepType, Role, accumulatedCreepType } from "./types";
 
 import { spawnCreep, getNonFullTargets } from "./general"
 
+const variableCount = (spawn: StructureSpawn): number => {
+    return spawn.room.find(FIND_SOURCES).length;
+}
+
 const minerTypes: CreepType[] =  [
     {
         phase: 2,
@@ -13,7 +17,8 @@ const minerTypes: CreepType[] =  [
         ],
         memory: {
             role: Role.Miner
-        }
+        },
+        variableCount,
     },
     {
         phase: 3,
@@ -25,7 +30,8 @@ const minerTypes: CreepType[] =  [
         ],
         memory: {
             role: Role.Miner
-        }
+        },
+        variableCount,
     },
     {
         phase: 4,
@@ -38,6 +44,8 @@ const minerTypes: CreepType[] =  [
         memory: {
             role: Role.Miner
         },
+
+        variableCount,
 
         forAll: true,
     }

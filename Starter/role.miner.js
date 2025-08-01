@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
 const general_1 = require("./general");
+const variableCount = (spawn) => {
+    return spawn.room.find(FIND_SOURCES).length;
+};
 const minerTypes = [
     {
         phase: 2,
@@ -12,7 +15,8 @@ const minerTypes = [
         ],
         memory: {
             role: types_1.Role.Miner
-        }
+        },
+        variableCount,
     },
     {
         phase: 3,
@@ -24,7 +28,8 @@ const minerTypes = [
         ],
         memory: {
             role: types_1.Role.Miner
-        }
+        },
+        variableCount,
     },
     {
         phase: 4,
@@ -37,6 +42,7 @@ const minerTypes = [
         memory: {
             role: types_1.Role.Miner
         },
+        variableCount,
         forAll: true,
     }
 ];

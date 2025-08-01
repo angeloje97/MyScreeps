@@ -15,6 +15,24 @@ const handleExtensions = (spawn) => {
         room.createConstructionSite(pos.x, pos.y - (i * 2) - 2, struct);
     }
 };
+//#region Exits
+function isEdgeExitPosition(pos, exitPositions) {
+    // Check adjacent positions (orthogonally)
+    const adjacent = [
+        { x: pos.x - 1, y: pos.y },
+        { x: pos.x + 1, y: pos.y },
+        { x: pos.x, y: pos.y - 1 },
+        { x: pos.x, y: pos.y + 1 },
+    ];
+    let count = 0;
+    for (const adj of adjacent) {
+        if (exitPositions.some(e => e.x === adj.x && e.y === adj.y)) {
+            count++;
+        }
+    }
+    return count === 1;
+}
+//#endregion
 //#region Walls
 const handleWalls = (spawn) => {
     var _a, _b;
@@ -25,8 +43,6 @@ const handleWalls = (spawn) => {
     const buildExitWalls = (xOffset, yOffset, find) => {
         const exits = spawn.room.find(find);
         for (const exitPos of exits) {
-            if (!('x' in exitPos) || !('y' in exitPos) || !('roomName' in exitPos))
-                continue;
             const pos = new RoomPosition(exitPos.x + xOffset, exitPos.y + yOffset, exitPos.roomName);
             const hasRoad = spawn.room.lookForAt(LOOK_STRUCTURES, pos.x, pos.y)
                 .some(s => s.structureType === STRUCTURE_ROAD);
@@ -36,14 +52,17 @@ const handleWalls = (spawn) => {
                 .some(s => s.structureType === STRUCTURE_ROAD);
             if (hasRoadSite)
                 continue;
-            spawn.room.createConstructionSite(pos, STRUCTURE_WALL);
+            const result = spawn.room.createConstructionSite(pos, STRUCTURE_WALL);
+            console.log(result);
+            if (!isEdgeExitPosition(exitPos, exits))
+                continue;
         }
     };
     const exitTypes = [FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_LEFT, FIND_EXIT_RIGHT];
-    buildExitWalls(0, 3, FIND_EXIT_TOP);
-    buildExitWalls(0, -3, FIND_EXIT_BOTTOM);
-    buildExitWalls(-3, 0, FIND_EXIT_RIGHT);
-    buildExitWalls(3, 0, FIND_EXIT_LEFT);
+    buildExitWalls(0, 2, FIND_EXIT_TOP);
+    buildExitWalls(0, -2, FIND_EXIT_BOTTOM);
+    buildExitWalls(-2, 0, FIND_EXIT_RIGHT);
+    buildExitWalls(2, 0, FIND_EXIT_LEFT);
     //#endregion
     //#endregion
 };

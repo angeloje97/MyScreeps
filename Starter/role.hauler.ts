@@ -60,13 +60,9 @@ const roleHauler = {
         if(creep.memory.status == Status.Harvesting){
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
                 filter: r => r.resourceType == RESOURCE_ENERGY
-            })
+            }).sort((a, b) => b.amount - a.amount)
 
             let dropIndex = 0;
-
-            if(index){
-                dropIndex = index % droppedEnergy.length;
-            }
 
             if(droppedEnergy.length > 0){
                 if(creep.pickup(droppedEnergy[dropIndex]) == ERR_NOT_IN_RANGE){

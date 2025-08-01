@@ -34,9 +34,9 @@ const upgraderTypes: CreepType[] = [
         count: 1,
         substitution: 2,
         body: [
-            ...Array(10).fill(WORK),
+            ...Array(9).fill(WORK),
             ...Array(5).fill(CARRY),
-            ...Array(1).fill(MOVE)
+            ...Array(3).fill(MOVE)
         ],
         memory: {
             role: Role.Upgrader
@@ -48,10 +48,26 @@ const upgraderTypes: CreepType[] = [
 const roleUpgrader = {
     run: (creep: Creep) => {
 
+        if(creep.store[RESOURCE_ENERGY] == 0){
+            const storage = creep.room.find(FIND_STRUCTURES,
+                {
+                    filter: s => s.structureType == STRUCTURE_STORAGE
+                }
+            )
+            if(storage.length > 0){
+                if(creep.withdraw(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(storage[0])
+                }
+
+            }
+        }
+
         const result = creep.upgradeController(creep.room.controller!)
         if(result == ERR_NOT_IN_RANGE){
             creep.moveTo(creep.room.controller!)
         }
+
+        
     },
     handleUpgraders: (spawn: StructureSpawn) => {
         spawnCreep(spawn, upgraderTypes)

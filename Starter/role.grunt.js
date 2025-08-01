@@ -53,7 +53,8 @@ const gruntTypes = [
         ],
         memory: {
             role: types_1.Role.Grunt,
-        }
+        },
+        forAll: true,
     }
 ];
 exports.roleGrunt = {
@@ -74,6 +75,9 @@ exports.roleGrunt = {
         if (creep.memory.status == types_1.Status.Harvesting) {
             let sourceIndex = 0;
             let dropIndex = 0;
+            const storage = creep.room.find(FIND_STRUCTURES, {
+                filter: s => s.structureType == STRUCTURE_STORAGE
+            });
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
                 filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()
             });
@@ -81,7 +85,12 @@ exports.roleGrunt = {
                 sourceIndex = index % sources.length;
                 dropIndex = index % droppedEnergy.length;
             }
-            if (droppedEnergy.length == 0) {
+            if (storage.length > 0 && storage[0].store[RESOURCE_ENERGY] >= creep.store.getCapacity()) {
+                if (creep.withdraw(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(storage[0]);
+                }
+            }
+            else if (droppedEnergy.length == 0) {
                 if (creep.harvest(sources[sourceIndex]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(sources[sourceIndex]);
                 }

@@ -19,6 +19,27 @@ const handleExtensions = (spawn: StructureSpawn): void => {
   }
 };
 
+//#region Exits
+
+function isEdgeExitPosition(pos: RoomPosition, exitPositions: RoomPosition[]): boolean {
+    // Check adjacent positions (orthogonally)
+    const adjacent = [
+        { x: pos.x - 1, y: pos.y },
+        { x: pos.x + 1, y: pos.y },
+        { x: pos.x, y: pos.y - 1 },
+        { x: pos.x, y: pos.y + 1 },
+    ];
+    let count = 0;
+    for (const adj of adjacent) {
+        if (exitPositions.some(e => e.x === adj.x && e.y === adj.y)) {
+            count++;
+        }
+    }
+    return count === 1;
+}
+
+//#endregion
+
 //#region Walls
 
 const handleWalls = (spawn: StructureSpawn) =>{
@@ -26,35 +47,46 @@ const handleWalls = (spawn: StructureSpawn) =>{
     if(controllerLevel < 4) return;
 
     //#region Top Walls
-  const buildExitWalls = (xOffset: number, yOffset: number, find: FindConstant) => {
-    const exits = spawn.room.find(find);
+  const buildExitWalls = (
+    xOffset: number, 
+    yOffset: number, 
+    find: FindConstant, 
+    onFoundRoad = (pos: RoomPosition) => {}) => {
+      
+    const exits: RoomPosition[] = spawn.room.find(find);
 
     for(const exitPos of exits){
-      if (!('x' in exitPos) || !('y' in exitPos) || !('roomName' in exitPos)) continue
-
+      
       const pos = new RoomPosition(exitPos.x + xOffset, exitPos.y + yOffset, exitPos.roomName);
 
       const hasRoad = spawn.room.lookForAt(LOOK_STRUCTURES, pos.x, pos.y)
         .some(s => s.structureType === STRUCTURE_ROAD);
     
-      if(hasRoad) continue;
+      if(hasRoad) {
+        onFoundRoad(pos);
+        continue;
+      }
 
       const hasRoadSite = spawn.room.lookForAt(LOOK_CONSTRUCTION_SITES, pos.x, pos.y)
         .some(s => s.structureType === STRUCTURE_ROAD);
 
-      if(hasRoadSite) continue;
+      if(hasRoadSite) {
+        onFoundRoad(pos);
+        continue;
+      }
 
-      spawn.room.createConstructionSite(pos, STRUCTURE_WALL)
-
+      const result = spawn.room.createConstructionSite(pos, STRUCTURE_WALL)
+      console.log(result)
+      if(!isEdgeExitPosition(exitPos, exits)) continue;
     }
   }
   
   const exitTypes: FindConstant[] = [FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_LEFT, FIND_EXIT_RIGHT]
 
-  buildExitWalls(0, 3, FIND_EXIT_TOP)
-  buildExitWalls(0, -3, FIND_EXIT_BOTTOM)
-  buildExitWalls(-3, 0, FIND_EXIT_RIGHT)
-  buildExitWalls(3, 0, FIND_EXIT_LEFT)
+  buildExitWalls(0, 2, FIND_EXIT_TOP)
+  buildExitWalls(0, -2, FIND_EXIT_BOTTOM)
+  buildExitWalls(-2, 0, FIND_EXIT_RIGHT)
+  buildExitWalls(2, 0, FIND_EXIT_LEFT)
 
   //#endregion
     

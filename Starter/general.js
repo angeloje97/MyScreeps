@@ -85,7 +85,8 @@ const spawnCreep = (spawn, creepTypes) => {
     const creepType = (0, types_1.accumulatedCreepType)(phase, creepTypes);
     if (creepType == null)
         return;
-    const { count, body, memory, substitution, phase: creepPhase } = creepType;
+    const { body, memory, substitution, phase: creepPhase } = creepType;
+    const count = creepType.variableCount ? creepType.variableCount(spawn) : creepType.count;
     const name = types_1.Role[memory.role];
     const currentCreeps = lodash_1.default.filter(Game.creeps, (creep) => creep.memory.role === memory.role &&
         creep.memory.spawn === spawn.name &&
