@@ -1,4 +1,6 @@
 import { Role } from "./types";
+
+
 const structureHandler = require("structures");
 const roleGrunt = require("./role.grunt")
 const roleKnight = require("./role.knight")

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.roleGrunt = void 0;
 const types_1 = require("./types");
 const general_1 = require("./general");
 const gruntTypes = [
@@ -55,7 +56,7 @@ const gruntTypes = [
         }
     }
 ];
-const roleGrunt = {
+exports.roleGrunt = {
     run: (creep) => {
         const isEmpty = creep.store[RESOURCE_ENERGY] == 0;
         const isFull = creep.store.getFreeCapacity() == 0;
@@ -72,23 +73,22 @@ const roleGrunt = {
         //#region Harvesting
         if (creep.memory.status == types_1.Status.Harvesting) {
             let sourceIndex = 0;
+            let dropIndex = 0;
+            const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
+                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()
+            });
             if (index) {
                 sourceIndex = index % sources.length;
+                dropIndex = index % droppedEnergy.length;
             }
-            const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity() * 3
-            });
             if (droppedEnergy.length == 0) {
                 if (creep.harvest(sources[sourceIndex]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(sources[sourceIndex]);
                 }
             }
-            else {
-                const closestEnergy = creep.pos.findClosestByRange(droppedEnergy);
-                if (closestEnergy) {
-                    if (creep.pickup(closestEnergy) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(closestEnergy);
-                    }
+            else if (droppedEnergy.length > 0) {
+                if (creep.pickup(droppedEnergy[dropIndex]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(droppedEnergy[dropIndex]);
                 }
             }
         }
@@ -99,8 +99,9 @@ const roleGrunt = {
                 filter: c => c.memory.role == types_1.Role.Hauler
             });
             if (nonFullTowers.length > 0 && haulers.length == 0) {
-                if (creep.transfer(nonFullTowers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(nonFullTowers[0]);
+                const closestTower = creep.pos.findClosestByRange(nonFullTowers);
+                if (creep.transfer(closestTower, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(closestTower);
                 }
             }
             else {
@@ -155,4 +156,4 @@ const roleGrunt = {
         (0, general_1.spawnCreep)(spawn, gruntTypes);
     }
 };
-module.exports = roleGrunt;
+module.exports = exports.roleGrunt;

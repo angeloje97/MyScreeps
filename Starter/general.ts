@@ -1,14 +1,15 @@
 import { accumulatedCreepType, CreepType, Role } from "./types";
-import _ from "lodash";
+import _, { max, memoize } from "lodash";
 
-export const getNonFullTargets = (creep: Creep) => {
-    const targets = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_TOWER];
+export const getNonFullTargets = (creep: Creep, additionalStructures: StructureConstant[] = []) => {
+
+    const targets = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_TOWER, ...additionalStructures];
     return creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             let isTarget = true;
             for (const target of targets) {
                 if (structure.structureType == target) {
-                    if (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    if ('store' in structure && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                         return true;
                     }
                 }
@@ -17,6 +18,7 @@ export const getNonFullTargets = (creep: Creep) => {
         },
     });
 };
+
 
 //#region Inventory Functions
 
@@ -78,6 +80,9 @@ export const creepsExists = (spawn: StructureSpawn, roles: Role[]) => {
 
 let useSub = false;
 let subPhase = 0;
+let replaceMentTicks = 10;
+const maxReplacementTicks = 40;
+
 export const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void => {
 
   //#region Common Data
@@ -86,6 +91,10 @@ export const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void
   
   if(useSub){
     phase = subPhase;
+  }
+
+  if(spawn.memory.replacingCoolDown > 0){
+    spawn.memory.replacingCoolDown -= 1;
   }
   
   const creepType = accumulatedCreepType(phase, creepTypes)
@@ -97,30 +106,36 @@ export const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void
   
   const currentCreeps = _.filter(
     Game.creeps,
-    (creep) => creep.memory.role == memory.role && creep.memory.spawn == spawn.name
+    (creep) =>  
+        creep.memory.role === memory.role &&  
+        creep.memory.spawn === spawn.name &&
+        typeof creep.ticksToLive == 'number' &&
+        creep.ticksToLive > (body.length * 3) + 10
   );
 
   //#endregion
 
-  //#region Handle Replacing Creep
+
+  //#region Handle Replacing Creep With Substitution
   if (currentCreeps.length >= count){
     let suicide = false;
+    const hasExtensions = hasAllExtensionsBuilt(spawn, creepPhase);
     for(const creep of currentCreeps){
       if(creep.memory.phase! < phase){
-        const hasExtensions = hasAllExtensionsBuilt(spawn, creepPhase);
         const fullResources = allExtensionsFull(spawn);
 
         if(hasExtensions && fullResources){
           creep.suicide();
           suicide = true;
+          spawn.memory.replacingCoolDown = maxReplacementTicks;
           break;
         }
       }
     }
 
     if(! suicide){
-
-      if(substitution){
+      const hasCreeps = creepsExists(spawn, [Role.Hauler, Role.Miner]);
+      if(substitution && (!hasCreeps || !hasExtensions)){
         subPhase = substitution;
         useSub = true;
 
@@ -156,9 +171,11 @@ export const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void
   //#endregion
   
   //#region Spawning Creep
+
   let result = spawn.spawnCreep(body, name + Game.time, {
     memory: { ...memory, spawn: spawn.name, index, phase },
   })
+
   //#endregion
 
   //#region Handle Substitution
@@ -168,9 +185,7 @@ export const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void
     const hasExtensions = hasAllExtensionsBuilt(spawn, creepPhase);
     if(hasCreeps && hasExtensions) return;
 
-    if(memory.role == Role.Grunt){
-      console.log(phase);
-    }
+    
 
     subPhase = substitution;
 

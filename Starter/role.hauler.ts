@@ -5,7 +5,7 @@ import { spawnCreep, getNonFullTargets } from "./general"
 const haulerTypes: CreepType[] = [
     {
         phase: 2,
-        count: 1,
+        count: 2,
         body: [
             ...Array(6).fill(CARRY),
             ...Array(5).fill(MOVE)
@@ -17,7 +17,7 @@ const haulerTypes: CreepType[] = [
     },
     {
         phase: 3,
-        count: 1,
+        count: 2,
         substitution: 2,
         body: [
             ...Array(10).fill(CARRY),
@@ -40,11 +40,15 @@ const haulerTypes: CreepType[] = [
             role: Role.Hauler,
             status: Status.Harvesting,
         },
+
+        forAll: true
     }
 ]
 
 const roleHauler = {
     run: (creep: Creep) => {
+        const {index} = creep.memory;
+
         if(creep.store[RESOURCE_ENERGY] == 0){
             creep.memory.status = Status.Harvesting;
         }
@@ -55,17 +59,24 @@ const roleHauler = {
 
         if(creep.memory.status == Status.Harvesting){
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()*2
+                filter: r => r.resourceType == RESOURCE_ENERGY
             })
 
-            const closestEnergy = creep.pos.findClosestByRange(droppedEnergy)
-            if(closestEnergy){
-                if(creep.pickup(closestEnergy) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(closestEnergy)
+            let dropIndex = 0;
+
+            if(index){
+                dropIndex = index % droppedEnergy.length;
+            }
+
+            if(droppedEnergy.length > 0){
+                if(creep.pickup(droppedEnergy[dropIndex]) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(droppedEnergy[dropIndex])
             }
 
             }
         }
+
+
 
         if(creep.memory.status == Status.Hauling){
             const nonFullTargets: AnyStructure[] = getNonFullTargets(creep)
@@ -77,9 +88,24 @@ const roleHauler = {
                 }
             }
             else{
+                creep.memory.status = Status.Storing;
+            }
+        }
+
+        if(creep.memory.status == Status.Storing){
+            const storage = creep.room.find(FIND_STRUCTURES, {filter: s => s.structureType == STRUCTURE_STORAGE})
+
+            if(storage.length != 0 && storage[0].store.getFreeCapacity() > 0){
+                if(creep.transfer(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(storage[0])
+                }
+
+            }
+            else{
                 creep.memory.status = Status.Helping;
             }
         }
+
 
         if(creep.memory.status == Status.Helping){
             const otherCreeps = creep.room.find(FIND_MY_CREEPS, {

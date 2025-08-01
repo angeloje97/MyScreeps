@@ -31,19 +31,21 @@ const minerTypes = [
         count: 2,
         substitution: 3,
         body: [
-            ...Array(11).fill(WORK),
-            ...Array(4).fill(MOVE)
+            ...Array(7).fill(WORK),
+            ...Array(7).fill(MOVE)
         ],
         memory: {
             role: types_1.Role.Miner
-        }
+        },
+        forAll: true,
     }
 ];
 const roleMiner = {
     run: (creep) => {
         const sources = creep.room.find(FIND_SOURCES);
         const source = sources[creep.memory.index % sources.length];
-        if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+        const result = creep.harvest(source);
+        if (result == ERR_NOT_IN_RANGE || result == ERR_NOT_ENOUGH_RESOURCES) {
             creep.moveTo(source);
         }
         if (creep.store.getFreeCapacity() == 0) {

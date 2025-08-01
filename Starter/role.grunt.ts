@@ -59,7 +59,7 @@ const gruntTypes: CreepType[] = [
 ]
 
 
-const roleGrunt = {
+export const roleGrunt = {
     run: (creep: Creep) : void => {
         const isEmpty = creep.store[RESOURCE_ENERGY] == 0
         const isFull = creep.store.getFreeCapacity() == 0
@@ -80,25 +80,26 @@ const roleGrunt = {
         //#region Harvesting
         if(creep.memory.status == Status.Harvesting){
             let sourceIndex = 0;
-            if(index){
-                sourceIndex = index % sources.length;
-            }
+            let dropIndex = 0;
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()*3
+                filter: r => r.resourceType == RESOURCE_ENERGY && r.amount >= creep.store.getFreeCapacity()
             })
 
+            if(index){
+                sourceIndex = index % sources.length;
+                dropIndex = index % droppedEnergy.length;
+            }
 
             if(droppedEnergy.length == 0){
 
                 if(creep.harvest(sources[sourceIndex]) == ERR_NOT_IN_RANGE){
                     creep.moveTo(sources[sourceIndex])
                 }
-            }else{
-                const closestEnergy = creep.pos.findClosestByRange(droppedEnergy)
-                if(closestEnergy){
-                    if(creep.pickup(closestEnergy) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(closestEnergy)
-                    }
+            }else if(droppedEnergy.length > 0){
+                
+                if(creep.pickup(droppedEnergy[dropIndex]) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(droppedEnergy[dropIndex])
+                    
                 }
             }
 
@@ -114,8 +115,9 @@ const roleGrunt = {
             )
 
             if(nonFullTowers.length > 0 && haulers.length == 0){
-                if(creep.transfer(nonFullTowers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(nonFullTowers[0])
+                const closestTower = creep.pos.findClosestByRange(nonFullTowers);
+                if(creep.transfer(closestTower!, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(closestTower!)
                 }
             }else{
                 creep.memory.status = Status.Building;

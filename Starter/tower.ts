@@ -21,8 +21,21 @@ const tower = {
                 return;
             }
 
+            // const damagedStructure =  tower.pos.findClosestByRange(FIND_STRUCTURES, {
+            //     filter: s => s.hits < s.hitsMax && 
+            //     s.structureType != STRUCTURE_RAMPART &&
+            //     s.structureType !== STRUCTURE_WALL
+            // })
+
+
             const damagedStructure =  tower.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: s => s.hits < s.hitsMax && s.structureType !== STRUCTURE_WALL && s.structureType != STRUCTURE_RAMPART
+                filter: (s) => {
+                    if(s.hits >= s.hitsMax) return false;
+                    if(s.structureType == STRUCTURE_RAMPART) return false;
+                    if(s.structureType == STRUCTURE_WALL && s.hits > 3000) return false;
+
+                    return true;
+                }
             })
 
             if(damagedStructure){

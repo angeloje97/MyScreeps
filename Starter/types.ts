@@ -8,6 +8,13 @@ declare global {
   }
 }
 
+declare global {
+  interface SpawnMemory{
+    replacingCoolDown: number,
+    roadLevelsPlaced: boolean[],
+  }
+}
+
 //#region Creep Type
 export type CreepType = {
   body: BodyPartConstant[];
@@ -15,9 +22,9 @@ export type CreepType = {
   phase: number;
   memory: CreepMemory;
 
-  
+  requiredCreeps?: Role[]
   substitution?: number;
-
+  forAll?: boolean;
 };
 
 export const accumulatedCreepType = (
@@ -29,6 +36,10 @@ export const accumulatedCreepType = (
   for(const creepType of creepList){
     if(creepType.phase == phase){
       return creepType;
+    }
+
+    if(creepType.forAll && phase > creepType.phase){
+      return creepType
     }
   }
 
@@ -45,6 +56,7 @@ export enum Status {
   Building,
   Hauling,
   Helping,
+  Storing,
 }
 
 export enum Role {

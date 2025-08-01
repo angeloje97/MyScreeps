@@ -6,6 +6,9 @@ const accumulatedCreepType = (phase, creepList) => {
         if (creepType.phase == phase) {
             return creepType;
         }
+        if (creepType.forAll && phase > creepType.phase) {
+            return creepType;
+        }
     }
     return null;
 };
@@ -20,6 +23,7 @@ var Status;
     Status[Status["Building"] = 3] = "Building";
     Status[Status["Hauling"] = 4] = "Hauling";
     Status[Status["Helping"] = 5] = "Helping";
+    Status[Status["Storing"] = 6] = "Storing";
 })(Status || (exports.Status = Status = {}));
 var Role;
 (function (Role) {
