@@ -3,6 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
 const general_1 = require("./general");
 const variableCount = (spawn) => {
+    const hasStorage = spawn.room.find(FIND_STRUCTURES, {
+        filter: s => s.structureType == STRUCTURE_STORAGE
+    }).length > 0;
+    if (hasStorage) {
+        return spawn.memory.miningNodes.sources.length;
+    }
     return spawn.room.find(FIND_SOURCES).length;
 };
 const minerTypes = [
@@ -48,7 +54,7 @@ const minerTypes = [
 ];
 const roleMiner = {
     run: (creep) => {
-        const sources = creep.room.find(FIND_SOURCES);
+        const sources = Game.spawns[creep.memory.spawn].memory.miningNodes.sources;
         const source = sources[creep.memory.index % sources.length];
         const result = creep.harvest(source);
         if (result == ERR_NOT_IN_RANGE || result == ERR_NOT_ENOUGH_RESOURCES) {

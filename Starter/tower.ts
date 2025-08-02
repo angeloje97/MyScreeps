@@ -4,12 +4,13 @@ const tower = {
             filter: s=> s.structureType == STRUCTURE_TOWER
         })
 
+
         for(const tower of towers){
             //Attack nearest hostile
             const hostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
             if(hostile) {
                 tower.attack(hostile);
-                return;
+                continue;
             }
 
             const damagedCreep = tower.pos.findClosestByPath(FIND_MY_CREEPS, {
@@ -18,7 +19,7 @@ const tower = {
 
             if(damagedCreep){
                 tower.heal(damagedCreep);
-                return;
+                continue;
             }
 
             // const damagedStructure =  tower.pos.findClosestByRange(FIND_STRUCTURES, {

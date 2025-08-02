@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.spawnCreep = exports.creepsExists = exports.allExtensionsFull = exports.hasAllExtensionsBuilt = exports.getNonFullTargets = void 0;
+exports.adjacentRoom = exports.adjacentRoomName = exports.spawnCreep = exports.creepsExists = exports.allExtensionsFull = exports.hasAllExtensionsBuilt = exports.getNonFullTargets = void 0;
 const types_1 = require("./types");
+const types_2 = require("./types");
 const lodash_1 = __importDefault(require("lodash"));
 const getNonFullTargets = (creep, additionalStructures = []) => {
     const targets = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_TOWER, ...additionalStructures];
@@ -82,12 +83,12 @@ const spawnCreep = (spawn, creepTypes) => {
     if (spawn.memory.replacingCoolDown > 0) {
         spawn.memory.replacingCoolDown -= 1;
     }
-    const creepType = (0, types_1.accumulatedCreepType)(phase, creepTypes);
+    const creepType = (0, types_2.accumulatedCreepType)(phase, creepTypes);
     if (creepType == null)
         return;
     const { body, memory, substitution, phase: creepPhase } = creepType;
     const count = creepType.variableCount ? creepType.variableCount(spawn) : creepType.count;
-    const name = types_1.Role[memory.role];
+    const name = types_2.Role[memory.role];
     const currentCreeps = lodash_1.default.filter(Game.creeps, (creep) => creep.memory.role === memory.role &&
         creep.memory.spawn === spawn.name &&
         typeof creep.ticksToLive == 'number' &&
@@ -109,7 +110,7 @@ const spawnCreep = (spawn, creepTypes) => {
             }
         }
         if (!suicide) {
-            const hasCreeps = (0, exports.creepsExists)(spawn, [types_1.Role.Hauler, types_1.Role.Miner]);
+            const hasCreeps = (0, exports.creepsExists)(spawn, [types_2.Role.Hauler, types_2.Role.Miner]);
             if (substitution && (!hasCreeps || !hasExtensions)) {
                 subPhase = substitution;
                 useSub = true;
@@ -143,7 +144,7 @@ const spawnCreep = (spawn, creepTypes) => {
     //#endregion
     //#region Handle Substitution
     if (result == ERR_NOT_ENOUGH_ENERGY && substitution) {
-        const hasCreeps = (0, exports.creepsExists)(spawn, [types_1.Role.Hauler, types_1.Role.Miner]);
+        const hasCreeps = (0, exports.creepsExists)(spawn, [types_2.Role.Hauler, types_2.Role.Miner]);
         const hasExtensions = (0, exports.hasAllExtensionsBuilt)(spawn, creepPhase);
         if (hasCreeps && hasExtensions)
             return;
@@ -156,4 +157,38 @@ const spawnCreep = (spawn, creepTypes) => {
     //#endregion
 };
 exports.spawnCreep = spawnCreep;
+//#endregion
+//#region Room Functions
+const adjacentRoomName = (room, direction) => {
+    const match = room.name.match(/^([WE])(\d+)([NS])(\d+)$/);
+    if (!match)
+        return room.name;
+    let [_, horiz, xStr, vert, yStr] = match;
+    let x = Number(xStr);
+    let y = Number(yStr);
+    switch (direction) {
+        case types_1.Direction.Top:
+            y = vert === 'N' ? y + 1 : y - 1;
+            break;
+        case types_1.Direction.Bottom:
+            y = vert === 'N' ? y - 1 : y + 1;
+            break;
+        case types_1.Direction.Left:
+            x = horiz === 'W' ? x + 1 : x - 1;
+            break;
+        case types_1.Direction.Right:
+            x = horiz === 'W' ? x - 1 : x + 1;
+            break;
+    }
+    const adjacentRoomName = `${horiz}${x}${vert}${y}`;
+    return adjacentRoomName;
+};
+exports.adjacentRoomName = adjacentRoomName;
+const adjacentRoom = (room, direction) => {
+    const match = room.name.match(/^([WE])(\d+)([NS])(\d+)$/);
+    if (!match)
+        return room;
+    return Game.rooms[(0, exports.adjacentRoomName)(room, direction)];
+};
+exports.adjacentRoom = adjacentRoom;
 //#endregion

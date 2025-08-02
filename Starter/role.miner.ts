@@ -1,11 +1,23 @@
 import { run } from "node:test";
-import { CreepType, Role, accumulatedCreepType } from "./types";
+import { CreepType, Direction, Role, accumulatedCreepType } from "./types";
 
-import { spawnCreep, getNonFullTargets } from "./general"
+import { spawnCreep, getNonFullTargets, adjacentRoom } from "./general"
 
 const variableCount = (spawn: StructureSpawn): number => {
+
+    const hasStorage = spawn.room.find(FIND_STRUCTURES,
+    { 
+        filter : s => s.structureType == STRUCTURE_STORAGE
+    }).length > 0
+
+    if(hasStorage){
+        return spawn.memory.miningNodes.sources.length;
+    }
+
     return spawn.room.find(FIND_SOURCES).length;
 }
+
+
 
 const minerTypes: CreepType[] =  [
     {
@@ -53,8 +65,8 @@ const minerTypes: CreepType[] =  [
 
 const roleMiner = {
     run: (creep: Creep) => {
-        const sources = creep.room.find(FIND_SOURCES)
-
+        const sources = Game.spawns[creep.memory.spawn!].memory.miningNodes.sources;
+        
         const source = sources[creep.memory.index! % sources.length]
         const result = creep.harvest(source)
         if(result == ERR_NOT_IN_RANGE || result == ERR_NOT_ENOUGH_RESOURCES){

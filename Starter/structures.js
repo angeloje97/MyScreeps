@@ -40,20 +40,23 @@ const handleWalls = (spawn) => {
     if (controllerLevel < 4)
         return;
     //#region Top Walls
-    const buildExitWalls = (xOffset, yOffset, find) => {
+    const buildExitWalls = (xOffset, yOffset, find, onFoundRoad = (pos) => { }) => {
         const exits = spawn.room.find(find);
         for (const exitPos of exits) {
             const pos = new RoomPosition(exitPos.x + xOffset, exitPos.y + yOffset, exitPos.roomName);
             const hasRoad = spawn.room.lookForAt(LOOK_STRUCTURES, pos.x, pos.y)
                 .some(s => s.structureType === STRUCTURE_ROAD);
-            if (hasRoad)
+            if (hasRoad) {
+                onFoundRoad(pos);
                 continue;
+            }
             const hasRoadSite = spawn.room.lookForAt(LOOK_CONSTRUCTION_SITES, pos.x, pos.y)
                 .some(s => s.structureType === STRUCTURE_ROAD);
-            if (hasRoadSite)
+            if (hasRoadSite) {
+                onFoundRoad(pos);
                 continue;
+            }
             const result = spawn.room.createConstructionSite(pos, STRUCTURE_WALL);
-            console.log(result);
             if (!isEdgeExitPosition(exitPos, exits))
                 continue;
         }

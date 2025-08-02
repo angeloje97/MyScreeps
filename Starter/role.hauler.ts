@@ -2,6 +2,14 @@ import { CreepType, Role, Status } from "./types";
 import _ from "lodash";
 import { spawnCreep, getNonFullTargets } from "./general"
 
+const variableCount = (spawn: StructureSpawn): number => {
+    if(!spawn.memory.hasStorage){
+        return 1;
+    }
+
+    return spawn.memory.miningNodes.sources.length - 1;
+};
+
 const haulerTypes: CreepType[] = [
     {
         phase: 2,
@@ -14,6 +22,7 @@ const haulerTypes: CreepType[] = [
             role: Role.Hauler,
             status: Status.Harvesting,
         },
+        
     },
     {
         phase: 3,
@@ -41,7 +50,9 @@ const haulerTypes: CreepType[] = [
             status: Status.Harvesting,
         },
 
-        forAll: true
+        forAll: true,
+
+        variableCount,
     }
 ]
 
@@ -58,22 +69,28 @@ const roleHauler = {
         }
 
         if(creep.memory.status == Status.Harvesting){
-            const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY
-            }).sort((a, b) => b.amount - a.amount)
+            const droppedEnergy = Game.spawns[creep.memory.spawn!].memory.drops.sources;
 
-            let dropIndex = 0;
+            let dropIndex = creep.memory.index!
+
+            if(dropIndex > 0){
+                dropIndex += 1;
+            }
 
             if(droppedEnergy.length > 0){
-                if(creep.pickup(droppedEnergy[dropIndex]) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(droppedEnergy[dropIndex])
+                if(creep.pickup(droppedEnergy[dropIndex%droppedEnergy.length]) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(droppedEnergy[dropIndex%droppedEnergy.length])
             }
 
             }
+            return;
         }
 
-
-
+        if(creep.room.name != Game.spawns[creep.memory.spawn!].room.name){
+            creep.moveTo(Game.spawns[creep.memory.spawn!])
+            return;
+        }
+        
         if(creep.memory.status == Status.Hauling){
             const nonFullTargets: AnyStructure[] = getNonFullTargets(creep)
             const closestSite = creep.pos.findClosestByRange(nonFullTargets);

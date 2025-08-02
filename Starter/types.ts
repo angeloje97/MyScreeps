@@ -5,13 +5,27 @@ declare global {
     status?: Status;
     spawn?: string;
     phase?: number;
+    stationed? : boolean;
   }
 }
 
 declare global {
   interface SpawnMemory{
     replacingCoolDown: number,
+
+    miningNodes: {
+      sources: Source[],
+    },
+    drops: {
+      sources: Resource<ResourceConstant>[],
+    }
+
+    exitDirections: Direction[],
+    roomsInUse: Room[],
+    
+    //Properties
     roadLevelsPlaced: boolean[],
+    hasStorage: boolean,
   }
 }
 
@@ -66,7 +80,15 @@ export enum Role {
   Miner,
   Upgrader,
   Knight,
-  Archer
+  Archer,
+  Scout,
+}
+
+export enum Direction {
+  Top,
+  Bottom,
+  Left,
+  Right,
 }
 
 //#endregion

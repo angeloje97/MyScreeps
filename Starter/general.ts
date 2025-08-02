@@ -1,3 +1,4 @@
+import { Direction } from "./types"
 import { accumulatedCreepType, CreepType, Role } from "./types";
 import _, { max, memoize } from "lodash";
 
@@ -200,4 +201,46 @@ export const spawnCreep = (spawn: StructureSpawn, creepTypes: CreepType[]): void
   }
   //#endregion
 };
+//#endregion
+
+//#region Room Functions
+
+export const adjacentRoomName = (room: Room, direction: Direction): string => {
+    const match = room.name.match(/^([WE])(\d+)([NS])(\d+)$/);
+    if (!match) return room.name;
+
+
+    let [_, horiz, xStr, vert, yStr] = match;
+    let x = Number(xStr);
+    let y = Number(yStr);
+
+
+    switch (direction) {
+        case Direction.Top:
+            y = vert === 'N' ? y + 1 : y - 1;
+            break;
+        case Direction.Bottom:
+            y = vert === 'N' ? y - 1 : y + 1;
+            break;
+        case Direction.Left:
+            x = horiz === 'W' ? x + 1 : x - 1;
+            break;
+        case Direction.Right:
+            x = horiz === 'W' ? x - 1 : x + 1;
+            break;
+    }
+
+
+    const adjacentRoomName = `${horiz}${x}${vert}${y}`;
+
+    return adjacentRoomName
+}
+
+export const adjacentRoom = (room: Room, direction: Direction): Room => {
+  const match = room.name.match(/^([WE])(\d+)([NS])(\d+)$/);
+  if (!match) return room;
+
+  return Game.rooms[adjacentRoomName(room, direction)]
+}
+
 //#endregion

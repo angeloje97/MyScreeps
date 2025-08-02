@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Role = exports.Status = exports.accumulatedCreepType = void 0;
+exports.Direction = exports.Role = exports.Status = exports.accumulatedCreepType = void 0;
 const accumulatedCreepType = (phase, creepList) => {
     for (const creepType of creepList) {
         if (creepType.phase == phase) {
@@ -33,5 +33,13 @@ var Role;
     Role[Role["Upgrader"] = 3] = "Upgrader";
     Role[Role["Knight"] = 4] = "Knight";
     Role[Role["Archer"] = 5] = "Archer";
+    Role[Role["Scout"] = 6] = "Scout";
 })(Role || (exports.Role = Role = {}));
+var Direction;
+(function (Direction) {
+    Direction[Direction["Top"] = 0] = "Top";
+    Direction[Direction["Bottom"] = 1] = "Bottom";
+    Direction[Direction["Left"] = 2] = "Left";
+    Direction[Direction["Right"] = 3] = "Right";
+})(Direction || (exports.Direction = Direction = {}));
 //#endregion

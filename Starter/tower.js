@@ -9,14 +9,14 @@ const tower = {
             const hostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
             if (hostile) {
                 tower.attack(hostile);
-                return;
+                continue;
             }
             const damagedCreep = tower.pos.findClosestByPath(FIND_MY_CREEPS, {
                 filter: c => c.hits < c.hitsMax
             });
             if (damagedCreep) {
                 tower.heal(damagedCreep);
-                return;
+                continue;
             }
             // const damagedStructure =  tower.pos.findClosestByRange(FIND_STRUCTURES, {
             //     filter: s => s.hits < s.hitsMax && 

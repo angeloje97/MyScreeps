@@ -52,7 +52,7 @@ const handleWalls = (spawn: StructureSpawn) =>{
     yOffset: number, 
     find: FindConstant, 
     onFoundRoad = (pos: RoomPosition) => {}) => {
-      
+
     const exits: RoomPosition[] = spawn.room.find(find);
 
     for(const exitPos of exits){
@@ -76,7 +76,6 @@ const handleWalls = (spawn: StructureSpawn) =>{
       }
 
       const result = spawn.room.createConstructionSite(pos, STRUCTURE_WALL)
-      console.log(result)
       if(!isEdgeExitPosition(exitPos, exits)) continue;
     }
   }
@@ -105,7 +104,6 @@ const handleStorage = (spawn: StructureSpawn) => {
   const pos = new RoomPosition(spawn.pos.x + 1 , spawn.pos.y + 3, spawn.room.name);
 
   spawn.room.createConstructionSite(pos, STRUCTURE_STORAGE);
-
 }
 
 //#endregion

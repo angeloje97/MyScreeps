@@ -1,12 +1,16 @@
+
 import { Role } from "./types";
 
 
 const structureHandler = require("structures");
+const roleScout = require("./role.scout")
 const roleGrunt = require("./role.grunt")
 const roleKnight = require("./role.knight")
 const roleMiner = require("./role.miner")
 const roleUpgrader = require('./role.upgrader')
 const roleHauler = require("./role.hauler")
+
+const roleSpawn = require("./role.spawn");
 
 const tower = require("./tower")
 
@@ -18,16 +22,19 @@ export function loop(): void {
   }
 
   for(const spawn of Object.values(Game.spawns)){
+    
+    roleSpawn.handleSpawn(spawn);
     structureHandler.run(spawn);
 
     roleKnight.handleKnights(spawn);
     
+    roleScout.handleScouts(spawn);
     roleUpgrader.handleUpgraders(spawn);
     roleHauler.handleHaulers(spawn);
     roleMiner.handleMiner(spawn);
     roleGrunt.handleGrunt(spawn);
 
-
+    
     tower.run(spawn);
     tower.handleTowers(spawn);
   }
@@ -50,5 +57,9 @@ export function loop(): void {
 
     if(creep.memory.role == Role.Knight)
       roleKnight.run(creep);
+
+    if(creep.memory.role == Role.Scout){
+      roleScout.run(creep);
+    }
   }
 }

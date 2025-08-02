@@ -2,6 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
 const general_1 = require("./general");
+const variableCount = (spawn) => {
+    if (!spawn.memory.hasStorage) {
+        return 1;
+    }
+    return spawn.memory.miningNodes.sources.length - 1;
+};
 const haulerTypes = [
     {
         phase: 2,
@@ -40,7 +46,8 @@ const haulerTypes = [
             role: types_1.Role.Hauler,
             status: types_1.Status.Harvesting,
         },
-        forAll: true
+        forAll: true,
+        variableCount,
     }
 ];
 const roleHauler = {
@@ -53,15 +60,21 @@ const roleHauler = {
             creep.memory.status = types_1.Status.Hauling;
         }
         if (creep.memory.status == types_1.Status.Harvesting) {
-            const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: r => r.resourceType == RESOURCE_ENERGY
-            }).sort((a, b) => b.amount - a.amount);
-            let dropIndex = 0;
+            const droppedEnergy = Game.spawns[creep.memory.spawn].memory.drops.sources;
+            let dropIndex = creep.memory.index;
+            if (dropIndex > 0) {
+                dropIndex += 1;
+            }
             if (droppedEnergy.length > 0) {
-                if (creep.pickup(droppedEnergy[dropIndex]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(droppedEnergy[dropIndex]);
+                if (creep.pickup(droppedEnergy[dropIndex % droppedEnergy.length]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(droppedEnergy[dropIndex % droppedEnergy.length]);
                 }
             }
+            return;
+        }
+        if (creep.room.name != Game.spawns[creep.memory.spawn].room.name) {
+            creep.moveTo(Game.spawns[creep.memory.spawn]);
+            return;
         }
         if (creep.memory.status == types_1.Status.Hauling) {
             const nonFullTargets = (0, general_1.getNonFullTargets)(creep);
