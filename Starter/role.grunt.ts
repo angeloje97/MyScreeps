@@ -1,6 +1,6 @@
 import { spawn } from "child_process";
 import { accumulatedCreepType, CreepType, Role, Status } from "./types";
-import { spawnCreep, getNonFullTargets } from "./general"
+import { spawnCreep, getNonFullTargets, creepsExists } from "./general"
 
 
 const gruntTypes: CreepType[] = [
@@ -45,7 +45,7 @@ const gruntTypes: CreepType[] = [
 
     {
         phase: 4,
-        count: 2,
+        count: 1,
         substitution: 2,
         body: [
             ...Array(6).fill(WORK),
@@ -96,7 +96,12 @@ export const roleGrunt = {
                 dropIndex = index % droppedEnergy.length;
             }
 
-            if(storage.length > 0 && storage[0].store[RESOURCE_ENERGY] >= creep.store.getCapacity()){
+            if(
+                storage.length > 0 && 
+                storage[0].store[RESOURCE_ENERGY] >= creep.store.getCapacity() && 
+                storage[0].store[RESOURCE_ENERGY] > Game.spawns[creep.memory.spawn!].memory.minStorageAmount
+            ){
+                
                 if(creep.withdraw(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                     creep.moveTo(storage[0])
                 }
@@ -120,13 +125,9 @@ export const roleGrunt = {
 
         //#region Hauling
         if(creep.memory.status == Status.Hauling){
-            const haulers = creep.room.find(FIND_MY_CREEPS, 
-                {
-                    filter: c => c.memory.role == Role.Hauler
-                }
-            )
+            const haulerExists = creepsExists(Game.spawns[creep.memory.spawn!], [Role.Hauler])
 
-            if(nonFullTowers.length > 0 && haulers.length == 0){
+            if(nonFullTowers.length > 0 && !haulerExists){
                 const closestTower = creep.pos.findClosestByRange(nonFullTowers);
                 if(creep.transfer(closestTower!, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                     creep.moveTo(closestTower!)

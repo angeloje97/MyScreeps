@@ -50,8 +50,10 @@ const roleUpgrader = {
                 filter: s => s.structureType == STRUCTURE_STORAGE
             });
             if (storage.length > 0) {
-                if (creep.withdraw(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(storage[0]);
+                if (storage[0].store[RESOURCE_ENERGY] > Game.spawns[creep.memory.spawn].memory.minStorageAmount) {
+                    if (creep.withdraw(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(storage[0]);
+                    }
                 }
             }
         }

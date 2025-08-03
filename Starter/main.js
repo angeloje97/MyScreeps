@@ -8,6 +8,7 @@ const roleGrunt = require("./role.grunt");
 const roleKnight = require("./role.knight");
 const roleMiner = require("./role.miner");
 const roleUpgrader = require('./role.upgrader');
+const roleRecharger = require("./role.recharger");
 const roleHauler = require("./role.hauler");
 const roleSpawn = require("./role.spawn");
 const tower = require("./tower");
@@ -23,6 +24,7 @@ function loop() {
         roleKnight.handleKnights(spawn);
         roleScout.handleScouts(spawn);
         roleUpgrader.handleUpgraders(spawn);
+        roleRecharger.handleRechargers(spawn);
         roleHauler.handleHaulers(spawn);
         roleMiner.handleMiner(spawn);
         roleGrunt.handleGrunt(spawn);
@@ -44,6 +46,9 @@ function loop() {
             roleKnight.run(creep);
         if (creep.memory.role == types_1.Role.Scout) {
             roleScout.run(creep);
+        }
+        if (creep.memory.role == types_1.Role.Recharger) {
+            roleRecharger.run(creep);
         }
     }
 }

@@ -34,6 +34,7 @@ var Role;
     Role[Role["Knight"] = 4] = "Knight";
     Role[Role["Archer"] = 5] = "Archer";
     Role[Role["Scout"] = 6] = "Scout";
+    Role[Role["Recharger"] = 7] = "Recharger";
 })(Role || (exports.Role = Role = {}));
 var Direction;
 (function (Direction) {

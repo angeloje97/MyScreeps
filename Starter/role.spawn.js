@@ -44,7 +44,7 @@ const getAllDroppedResources = (spawn, useRoomsInUse = true, resource = RESOURCE
     for (const room of rooms) {
         const droppedEnergies = room.find(FIND_DROPPED_RESOURCES, {
             filter: r => r.resourceType == resource,
-        });
+        }).sort((a, b) => b.amount - a.amount);
         for (const energy of droppedEnergies) {
             drops.push(energy);
         }
@@ -78,6 +78,7 @@ const handleStorage = (spawn) => {
         filter: s => s.structureType == STRUCTURE_STORAGE
     });
     spawn.memory.hasStorage = storages.length > 0;
+    spawn.memory.minStorageAmount = 10000;
 };
 const handleMap = (spawn) => {
     if (!spawn.memory.exitDirections) {
@@ -88,17 +89,24 @@ const handleMap = (spawn) => {
 const handleRoomsInUse = (spawn) => {
     const directions = spawn.memory.exitDirections;
     const rooms = [spawn.room];
+    const dangerRooms = [];
     for (const dir of directions) {
         const roomName = (0, general_1.adjacentRoomName)(spawn.room, dir);
-        if (Game.rooms[roomName]) {
-            const otherSpawn = Game.rooms[roomName].find(FIND_STRUCTURES, {
+        const room = Game.rooms[roomName];
+        if (room) {
+            const otherSpawn = room.find(FIND_STRUCTURES, {
                 filter: s => s.structureType == STRUCTURE_SPAWN
             });
-            if (otherSpawn.length == 0) {
-                rooms.push(Game.rooms[roomName]);
+            const threats = room.find(FIND_HOSTILE_CREEPS);
+            if (threats.length > 0) {
+                dangerRooms.push(room);
+            }
+            else if (otherSpawn.length == 0) {
+                rooms.push(room);
             }
         }
     }
+    spawn.memory.roomInDanger = dangerRooms;
     spawn.memory.roomsInUse = rooms;
 };
 //#endregion

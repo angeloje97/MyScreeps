@@ -1,6 +1,6 @@
 import { CreepType, Role, Status } from "./types";
 import _ from "lodash";
-import { spawnCreep, getNonFullTargets } from "./general"
+import { spawnCreep, getNonFullTargets, creepsExists } from "./general"
 
 const variableCount = (spawn: StructureSpawn): number => {
     if(!spawn.memory.hasStorage){
@@ -69,6 +69,18 @@ const roleHauler = {
         }
 
         if(creep.memory.status == Status.Harvesting){
+            const tombstones = creep.room.find(FIND_TOMBSTONES, {
+                filter: t => t.store[RESOURCE_ENERGY] > 0 // or any resource you want
+            });
+
+            if (tombstones.length > 0 && creep.memory.index == 0) {
+                const tombstone = tombstones[0]; // or use findClosestByPath for efficiency
+                if (creep.withdraw(tombstone, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(tombstone);
+                }
+                return;
+            }
+
             const droppedEnergy = Game.spawns[creep.memory.spawn!].memory.drops.sources;
 
             let dropIndex = creep.memory.index!
@@ -86,15 +98,25 @@ const roleHauler = {
             return;
         }
 
-        if(creep.room.name != Game.spawns[creep.memory.spawn!].room.name){
+        if(creep.room.name != Game.spawns[creep.memory.spawn!].room.name || (creep.ticksToLive && creep.ticksToLive < 30)){
             creep.moveTo(Game.spawns[creep.memory.spawn!])
+
+            if(creep.ticksToLive && creep.ticksToLive < 3){
+                creep.drop(RESOURCE_ENERGY);
+            }
             return;
         }
+
+        
+
+        
         
         if(creep.memory.status == Status.Hauling){
             const nonFullTargets: AnyStructure[] = getNonFullTargets(creep)
             const closestSite = creep.pos.findClosestByRange(nonFullTargets);
-            if(closestSite){
+            const hasRecharger = creepsExists(Game.spawns[creep.memory.spawn!], [Role.Recharger]);
+            
+            if(closestSite && !hasRecharger){
                 
                 if(creep.transfer(closestSite, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                     creep.moveTo(closestSite)
@@ -104,6 +126,7 @@ const roleHauler = {
                 creep.memory.status = Status.Storing;
             }
         }
+
 
         if(creep.memory.status == Status.Storing){
             const storage = creep.room.find(FIND_STRUCTURES, {filter: s => s.structureType == STRUCTURE_STORAGE})

@@ -65,7 +65,9 @@ const minerTypes: CreepType[] =  [
 
 const roleMiner = {
     run: (creep: Creep) => {
-        const sources = Game.spawns[creep.memory.spawn!].memory.miningNodes.sources;
+
+        const sources = Game.spawns[creep.memory.spawn!].memory.miningNodes.sources
+        
         
         const source = sources[creep.memory.index! % sources.length]
         const result = creep.harvest(source)

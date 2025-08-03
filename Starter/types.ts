@@ -12,7 +12,8 @@ declare global {
 declare global {
   interface SpawnMemory{
     replacingCoolDown: number,
-
+    minStorageAmount: number,
+    
     miningNodes: {
       sources: Source[],
     },
@@ -22,6 +23,7 @@ declare global {
 
     exitDirections: Direction[],
     roomsInUse: Room[],
+    roomInDanger: Room[],
     
     //Properties
     roadLevelsPlaced: boolean[],
@@ -82,6 +84,7 @@ export enum Role {
   Knight,
   Archer,
   Scout,
+  Recharger
 }
 
 export enum Direction {

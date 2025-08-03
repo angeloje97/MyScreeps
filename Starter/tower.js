@@ -18,16 +18,11 @@ const tower = {
                 tower.heal(damagedCreep);
                 continue;
             }
-            // const damagedStructure =  tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            //     filter: s => s.hits < s.hitsMax && 
-            //     s.structureType != STRUCTURE_RAMPART &&
-            //     s.structureType !== STRUCTURE_WALL
-            // })
             const damagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (s) => {
                     if (s.hits >= s.hitsMax)
                         return false;
-                    if (s.structureType == STRUCTURE_RAMPART)
+                    if (s.structureType == STRUCTURE_RAMPART && s.hits > 3000)
                         return false;
                     if (s.structureType == STRUCTURE_WALL && s.hits > 3000)
                         return false;

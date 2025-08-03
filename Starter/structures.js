@@ -39,7 +39,6 @@ const handleWalls = (spawn) => {
     const controllerLevel = (_b = (_a = spawn.room.controller) === null || _a === void 0 ? void 0 : _a.level) !== null && _b !== void 0 ? _b : 0;
     if (controllerLevel < 4)
         return;
-    //#region Top Walls
     const buildExitWalls = (xOffset, yOffset, find, onFoundRoad = (pos) => { }) => {
         const exits = spawn.room.find(find);
         for (const exitPos of exits) {
@@ -62,12 +61,13 @@ const handleWalls = (spawn) => {
         }
     };
     const exitTypes = [FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_LEFT, FIND_EXIT_RIGHT];
-    buildExitWalls(0, 2, FIND_EXIT_TOP);
-    buildExitWalls(0, -2, FIND_EXIT_BOTTOM);
-    buildExitWalls(-2, 0, FIND_EXIT_RIGHT);
-    buildExitWalls(2, 0, FIND_EXIT_LEFT);
-    //#endregion
-    //#endregion
+    const onFoundRoad = (pos) => {
+        spawn.room.createConstructionSite(pos, STRUCTURE_RAMPART);
+    };
+    buildExitWalls(0, 2, FIND_EXIT_TOP, onFoundRoad);
+    buildExitWalls(0, -2, FIND_EXIT_BOTTOM, onFoundRoad);
+    buildExitWalls(-2, 0, FIND_EXIT_RIGHT, onFoundRoad);
+    buildExitWalls(2, 0, FIND_EXIT_LEFT, onFoundRoad);
 };
 //#endregion
 //#region Storage
@@ -167,8 +167,8 @@ const handleRoads = (spawn) => {
 //#endregion
 const structureHandler = {
     run: (spawn) => {
-        handleRoads(spawn);
         handleExtensions(spawn);
+        handleRoads(spawn);
         handleWalls(spawn);
         handleStorage(spawn);
     },

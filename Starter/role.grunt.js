@@ -44,7 +44,7 @@ const gruntTypes = [
     },
     {
         phase: 4,
-        count: 2,
+        count: 1,
         substitution: 2,
         body: [
             ...Array(6).fill(WORK),
@@ -85,7 +85,9 @@ exports.roleGrunt = {
                 sourceIndex = index % sources.length;
                 dropIndex = index % droppedEnergy.length;
             }
-            if (storage.length > 0 && storage[0].store[RESOURCE_ENERGY] >= creep.store.getCapacity()) {
+            if (storage.length > 0 &&
+                storage[0].store[RESOURCE_ENERGY] >= creep.store.getCapacity() &&
+                storage[0].store[RESOURCE_ENERGY] > Game.spawns[creep.memory.spawn].memory.minStorageAmount) {
                 if (creep.withdraw(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(storage[0]);
                 }
@@ -104,10 +106,8 @@ exports.roleGrunt = {
         //#endregion
         //#region Hauling
         if (creep.memory.status == types_1.Status.Hauling) {
-            const haulers = creep.room.find(FIND_MY_CREEPS, {
-                filter: c => c.memory.role == types_1.Role.Hauler
-            });
-            if (nonFullTowers.length > 0 && haulers.length == 0) {
+            const haulerExists = (0, general_1.creepsExists)(Game.spawns[creep.memory.spawn], [types_1.Role.Hauler]);
+            if (nonFullTowers.length > 0 && !haulerExists) {
                 const closestTower = creep.pos.findClosestByRange(nonFullTowers);
                 if (creep.transfer(closestTower, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(closestTower);
