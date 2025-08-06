@@ -1,5 +1,5 @@
 import { Direction } from "./types"
-import { accumulatedCreepType, CreepType, Role } from "./types";
+import { accumulatedCreepType, CreepType, Role, BodyPartProperty } from "./types";
 import _, { max, memoize } from "lodash";
 
 export const getNonFullTargets = (creep: Creep, additionalStructures: StructureConstant[] = []) => {
@@ -75,6 +75,36 @@ export const creepsExists = (spawn: StructureSpawn, roles: Role[]) => {
 
   return true;
 }
+
+export const BodyParts = (bodyParts: BodyPartProperty[]): BodyPartConstant[] => {
+  const result: BodyPartConstant[] = [];
+
+  let highestIndex: number = 0;
+
+  for(const bodyPart of bodyParts){
+    if(bodyPart.ignorePatterns){
+
+      result.push(...Array(bodyPart.amount).fill(bodyPart.part))
+      continue;
+    }
+
+    if(bodyPart.amount > highestIndex){
+      highestIndex = bodyPart.amount;
+    }
+  }
+
+  for(let i = 0; i < highestIndex; i++){
+    for(const bodyPart of bodyParts){
+      if(bodyPart.ignorePatterns) continue;
+      if(bodyPart.amount < i) continue;
+
+      result.push(bodyPart.part);
+    }
+  }
+
+  return result;
+}
+
 //#endregion
 
 //#region Spawn Creep

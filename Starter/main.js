@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loop = loop;
 const types_1 = require("./types");
 const structureHandler = require("structures");
+const roleClaimer = require("./role.claimer");
 const roleScout = require("./role.scout");
 const roleGrunt = require("./role.grunt");
 const roleKnight = require("./role.knight");
@@ -21,13 +22,14 @@ function loop() {
     for (const spawn of Object.values(Game.spawns)) {
         roleSpawn.handleSpawn(spawn);
         structureHandler.run(spawn);
-        roleKnight.handleKnights(spawn);
+        roleClaimer.handleClaimers(spawn);
         roleScout.handleScouts(spawn);
         roleUpgrader.handleUpgraders(spawn);
         roleRecharger.handleRechargers(spawn);
         roleHauler.handleHaulers(spawn);
         roleMiner.handleMiner(spawn);
         roleGrunt.handleGrunt(spawn);
+        roleKnight.handleKnights(spawn);
         tower.run(spawn);
         tower.handleTowers(spawn);
     }
@@ -49,6 +51,9 @@ function loop() {
         }
         if (creep.memory.role == types_1.Role.Recharger) {
             roleRecharger.run(creep);
+        }
+        if (creep.memory.role == types_1.Role.Claimer) {
+            roleClaimer.run(creep);
         }
     }
 }

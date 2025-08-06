@@ -12,10 +12,10 @@ const haulerTypes = [
     {
         phase: 2,
         count: 2,
-        body: [
-            ...Array(6).fill(CARRY),
-            ...Array(5).fill(MOVE)
-        ],
+        body: (0, general_1.BodyParts)([
+            { amount: 6, part: CARRY },
+            { amount: 5, part: MOVE },
+        ]),
         memory: {
             role: types_1.Role.Hauler,
             status: types_1.Status.Harvesting,
@@ -25,10 +25,10 @@ const haulerTypes = [
         phase: 3,
         count: 2,
         substitution: 2,
-        body: [
-            ...Array(10).fill(CARRY),
-            ...Array(6).fill(MOVE)
-        ],
+        body: (0, general_1.BodyParts)([
+            { amount: 10, part: CARRY },
+            { amount: 6, part: MOVE },
+        ]),
         memory: {
             role: types_1.Role.Hauler,
             status: types_1.Status.Harvesting,
@@ -38,10 +38,10 @@ const haulerTypes = [
         phase: 4,
         count: 1,
         substitution: 2,
-        body: [
-            ...Array(16).fill(CARRY),
-            ...Array(10).fill(MOVE)
-        ],
+        body: (0, general_1.BodyParts)([
+            { amount: 16, part: CARRY },
+            { amount: 10, part: MOVE },
+        ]),
         memory: {
             role: types_1.Role.Hauler,
             status: types_1.Status.Harvesting,

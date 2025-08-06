@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adjacentRoom = exports.adjacentRoomName = exports.spawnCreep = exports.creepsExists = exports.allExtensionsFull = exports.hasAllExtensionsBuilt = exports.getNonFullTargets = void 0;
+exports.adjacentRoom = exports.adjacentRoomName = exports.spawnCreep = exports.BodyParts = exports.creepsExists = exports.allExtensionsFull = exports.hasAllExtensionsBuilt = exports.getNonFullTargets = void 0;
 const types_1 = require("./types");
 const types_2 = require("./types");
 const lodash_1 = __importDefault(require("lodash"));
@@ -68,6 +68,30 @@ const creepsExists = (spawn, roles) => {
     return true;
 };
 exports.creepsExists = creepsExists;
+const BodyParts = (bodyParts) => {
+    const result = [];
+    let highestIndex = 0;
+    for (const bodyPart of bodyParts) {
+        if (bodyPart.ignorePatterns) {
+            result.push(...Array(bodyPart.amount).fill(bodyPart.part));
+            continue;
+        }
+        if (bodyPart.amount > highestIndex) {
+            highestIndex = bodyPart.amount;
+        }
+    }
+    for (let i = 0; i < highestIndex; i++) {
+        for (const bodyPart of bodyParts) {
+            if (bodyPart.ignorePatterns)
+                continue;
+            if (bodyPart.amount < i)
+                continue;
+            result.push(bodyPart.part);
+        }
+    }
+    return result;
+};
+exports.BodyParts = BodyParts;
 //#endregion
 //#region Spawn Creep
 let useSub = false;

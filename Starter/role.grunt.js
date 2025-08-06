@@ -7,11 +7,11 @@ const gruntTypes = [
     {
         phase: 1,
         count: 4,
-        body: [
-            ...Array(1).fill(WORK),
-            ...Array(1).fill(CARRY),
-            ...Array(1).fill(MOVE)
-        ],
+        body: (0, general_1.BodyParts)([
+            { part: WORK, amount: 1 },
+            { part: CARRY, amount: 1 },
+            { part: MOVE, amount: 1 },
+        ]),
         memory: {
             role: types_1.Role.Grunt,
         }
@@ -20,11 +20,11 @@ const gruntTypes = [
         phase: 2,
         count: 4,
         substitution: 1,
-        body: [
-            ...Array(3).fill(WORK),
-            ...Array(2).fill(CARRY),
-            ...Array(3).fill(MOVE)
-        ],
+        body: (0, general_1.BodyParts)([
+            { part: WORK, amount: 3 },
+            { part: CARRY, amount: 2 },
+            { part: MOVE, amount: 3 },
+        ]),
         memory: {
             role: types_1.Role.Grunt,
         }
@@ -33,11 +33,11 @@ const gruntTypes = [
         phase: 3,
         count: 3,
         substitution: 2,
-        body: [
-            ...Array(4).fill(WORK),
-            ...Array(4).fill(CARRY),
-            ...Array(4).fill(MOVE)
-        ],
+        body: (0, general_1.BodyParts)([
+            { part: WORK, amount: 4 },
+            { part: CARRY, amount: 4 },
+            { part: MOVE, amount: 4 },
+        ]),
         memory: {
             role: types_1.Role.Grunt,
         }
@@ -46,11 +46,11 @@ const gruntTypes = [
         phase: 4,
         count: 1,
         substitution: 2,
-        body: [
-            ...Array(6).fill(WORK),
-            ...Array(6).fill(CARRY),
-            ...Array(8).fill(MOVE)
-        ],
+        body: (0, general_1.BodyParts)([
+            { part: WORK, amount: 6 },
+            { part: CARRY, amount: 6 },
+            { part: MOVE, amount: 8 },
+        ]),
         memory: {
             role: types_1.Role.Grunt,
         },

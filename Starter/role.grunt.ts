@@ -1,17 +1,17 @@
 import { spawn } from "child_process";
 import { accumulatedCreepType, CreepType, Role, Status } from "./types";
-import { spawnCreep, getNonFullTargets, creepsExists } from "./general"
+import { spawnCreep, getNonFullTargets, creepsExists, BodyParts } from "./general"
 
 
 const gruntTypes: CreepType[] = [
     {
         phase: 1,
         count: 4,
-        body: [
-            ...Array(1).fill(WORK),
-            ...Array(1).fill(CARRY),
-            ...Array(1).fill(MOVE)
-        ],
+        body: BodyParts([
+            {part: WORK, amount: 1},
+            {part: CARRY, amount: 1},
+            {part: MOVE, amount: 1},
+        ]),
         memory: {
             role: Role.Grunt,
         }
@@ -20,11 +20,11 @@ const gruntTypes: CreepType[] = [
         phase: 2,
         count: 4,
         substitution: 1,
-        body: [
-            ...Array(3).fill(WORK),
-            ...Array(2).fill(CARRY),
-            ...Array(3).fill(MOVE)
-        ],
+        body: BodyParts([
+            {part: WORK, amount: 3},
+            {part: CARRY, amount: 2},
+            {part: MOVE, amount: 3},
+        ]),
         memory: {
             role: Role.Grunt,
         }
@@ -33,11 +33,11 @@ const gruntTypes: CreepType[] = [
         phase: 3,
         count: 3,
         substitution: 2,
-        body: [
-            ...Array(4).fill(WORK),
-            ...Array(4).fill(CARRY),
-            ...Array(4).fill(MOVE)
-        ],
+        body: BodyParts([
+            {part: WORK, amount: 4},
+            {part: CARRY, amount: 4},
+            {part: MOVE, amount: 4},
+        ]),
         memory: {
             role: Role.Grunt,
         }
@@ -47,11 +47,11 @@ const gruntTypes: CreepType[] = [
         phase: 4,
         count: 1,
         substitution: 2,
-        body: [
-            ...Array(6).fill(WORK),
-            ...Array(6).fill(CARRY),
-            ...Array(8).fill(MOVE)
-        ],
+        body: BodyParts([
+            {part: WORK, amount: 6},
+            {part: CARRY, amount: 6},
+            {part: MOVE, amount: 8},
+        ]),
         memory: {
             role: Role.Grunt,
         },
@@ -148,6 +148,7 @@ export const roleGrunt = {
                 const prioSite = creep.room.find(FIND_CONSTRUCTION_SITES, {
                     filter: (site: ConstructionSite) => site.structureType == prio
                 })
+                
                 const closest = creep.pos.findClosestByRange(prioSite);
 
                 if(closest){

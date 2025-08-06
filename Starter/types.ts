@@ -28,8 +28,11 @@ declare global {
     //Properties
     roadLevelsPlaced: boolean[],
     hasStorage: boolean,
+
+    threats: (AnyStructure | Creep)[],
   }
 }
+
 
 //#region Creep Type
 export type CreepType = {
@@ -43,6 +46,12 @@ export type CreepType = {
   forAll?: boolean;
   variableCount?: (spawn: StructureSpawn) => number;
 };
+
+export type BodyPartProperty = {
+  part: BodyPartConstant,
+  amount: number,
+  ignorePatterns?: boolean,
+}
 
 export const accumulatedCreepType = (
   phase: number,
@@ -84,7 +93,8 @@ export enum Role {
   Knight,
   Archer,
   Scout,
-  Recharger
+  Recharger,
+  Claimer,
 }
 
 export enum Direction {

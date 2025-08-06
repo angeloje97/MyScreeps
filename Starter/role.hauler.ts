@@ -1,8 +1,10 @@
 import { CreepType, Role, Status } from "./types";
 import _ from "lodash";
-import { spawnCreep, getNonFullTargets, creepsExists } from "./general"
+import { spawnCreep, getNonFullTargets, creepsExists, BodyParts } from "./general"
 
 const variableCount = (spawn: StructureSpawn): number => {
+
+    
     if(!spawn.memory.hasStorage){
         return 1;
     }
@@ -14,10 +16,10 @@ const haulerTypes: CreepType[] = [
     {
         phase: 2,
         count: 2,
-        body: [
-            ...Array(6).fill(CARRY),
-            ...Array(5).fill(MOVE)
-        ],
+        body: BodyParts([
+            { amount: 6, part: CARRY },
+            { amount: 5, part: MOVE },
+        ]),
         memory: {
             role: Role.Hauler,
             status: Status.Harvesting,
@@ -28,10 +30,10 @@ const haulerTypes: CreepType[] = [
         phase: 3,
         count: 2,
         substitution: 2,
-        body: [
-            ...Array(10).fill(CARRY),
-            ...Array(6).fill(MOVE)
-        ],
+        body: BodyParts([
+            { amount: 10, part: CARRY },
+            { amount: 6, part: MOVE },
+        ]),
         memory: { 
             role: Role.Hauler,
             status: Status.Harvesting,
@@ -41,10 +43,10 @@ const haulerTypes: CreepType[] = [
         phase: 4,
         count: 1,
         substitution: 2,
-        body: [
-            ...Array(16).fill(CARRY),
-            ...Array(10).fill(MOVE)
-        ],
+        body: BodyParts([
+            { amount: 16, part: CARRY },
+            { amount: 10, part: MOVE },
+        ]),
         memory: { 
             role: Role.Hauler,
             status: Status.Harvesting,

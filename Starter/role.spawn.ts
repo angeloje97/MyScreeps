@@ -55,7 +55,9 @@ const handleMiningNodes = (spawn: StructureSpawn): void => {
 const getAllDroppedResources = (
     spawn: StructureSpawn, 
     useRoomsInUse: boolean = true, 
-    resource: ResourceConstant = RESOURCE_ENERGY) => {
+    resource: ResourceConstant = RESOURCE_ENERGY,
+    minAmount: number = 0
+) => {
 
     const drops: Resource<ResourceConstant>[] = [];
 
@@ -63,7 +65,7 @@ const getAllDroppedResources = (
 
     for(const room of rooms){
         const droppedEnergies = room.find(FIND_DROPPED_RESOURCES, {
-            filter: r=> r.resourceType == resource,  
+            filter: r=> r.resourceType == resource && r.amount > minAmount 
         }).sort((a, b) => b.amount - a.amount)
 
         for(const energy of droppedEnergies){
@@ -81,7 +83,7 @@ const handleDrops = (spawn: StructureSpawn): void => {
         }
     }
 
-    spawn.memory.drops.sources = getAllDroppedResources(spawn, spawn.memory.hasStorage);
+    spawn.memory.drops.sources = getAllDroppedResources(spawn, spawn.memory.hasStorage, RESOURCE_ENERGY, 100);
 }
 //#endregion;
 
@@ -118,10 +120,11 @@ const handleMap = (spawn: StructureSpawn) => {
     handleStorage(spawn);
 };
 
-const handleRoomsInUse = (spawn: StructureSpawn) => {
+const handleRooms = (spawn: StructureSpawn) => {
     const directions = spawn.memory.exitDirections;
     const rooms: Room[] = [spawn.room];
     const dangerRooms: Room[] = [];
+    const threats: (AnyStructure | Creep)[] = [];
 
     for(const dir of directions){
         const roomName = adjacentRoomName(spawn.room, dir);
@@ -132,10 +135,27 @@ const handleRoomsInUse = (spawn: StructureSpawn) => {
                 filter: s => s.structureType == STRUCTURE_SPAWN
             })
 
-            const threats = room.find(FIND_HOSTILE_CREEPS);
+            const threatConstants: StructureConstant[] = [STRUCTURE_INVADER_CORE];
+            
 
-            if(threats.length >0){
+            const threatStructures = room.find(FIND_STRUCTURES, {
+                filter: s => threatConstants.includes(s.structureType)
+            });
+
+            const hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
+
+            for(const structure of threatStructures){
+                threats.push(structure);
+            }
+
+            for(const creep of hostileCreeps){
+                threats.push(creep);
+            }
+
+
+            if(threatStructures.length >0){
                 dangerRooms.push(room);
+                continue;
             }
 
             else if(otherSpawn.length == 0){
@@ -148,12 +168,13 @@ const handleRoomsInUse = (spawn: StructureSpawn) => {
 
     spawn.memory.roomInDanger = dangerRooms;
     spawn.memory.roomsInUse = rooms;
+    spawn.memory.threats = threats;
 }
 
 //#endregion
 const roleSpawn = {
     handleSpawn: (spawn: StructureSpawn) => {
-        handleRoomsInUse(spawn);
+        handleRooms(spawn);
         handleMiningNodes(spawn);
         handleDrops(spawn);
         handleMap(spawn);

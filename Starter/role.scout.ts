@@ -13,7 +13,9 @@ const scoutTypes: CreepType[] = [
         phase: 4,
         count: 1,
         body: [
+            ...Array(2).fill(TOUGH),
             ...Array(6).fill(MOVE),
+
         ],
         memory: {
             role: Role.Scout,
