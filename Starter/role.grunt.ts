@@ -83,7 +83,7 @@ export const roleGrunt = {
             let sourceIndex = 0;
             let dropIndex = 0;
 
-            const storage = creep.room.find(FIND_STRUCTURES, {
+            const storage = Game.spawns[creep.memory.spawn!].room.find(FIND_STRUCTURES, {
                 filter: s => s.structureType == STRUCTURE_STORAGE
             })
 
@@ -141,7 +141,7 @@ export const roleGrunt = {
 
         // #region Building
         if(creep.memory.status == Status.Building){
-            const prioritySites: BuildableStructureConstant[] = [STRUCTURE_EXTENSION, STRUCTURE_ROAD]
+            const prioritySites: BuildableStructureConstant[] = [STRUCTURE_SPAWN, STRUCTURE_EXTENSION, STRUCTURE_ROAD]
             const sites: ConstructionSite[] = [];
 
             for(const prio of prioritySites){
@@ -166,6 +166,16 @@ export const roleGrunt = {
                 sites.push(closestOther)
             }
 
+            const otherRooms = Game.spawns[creep.memory.spawn!].memory.roomsInUse;
+
+            for(const room of otherRooms){
+                const otherRoomSites = room.find(FIND_CONSTRUCTION_SITES)
+
+                for(const site of otherRoomSites){
+                    sites.push(site);
+                }
+            }
+
             if(sites.length > 0){
                 const closesSite = sites[0]
 
@@ -173,7 +183,7 @@ export const roleGrunt = {
                     if (creep.build(closesSite) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(closesSite);
                     }
-                }
+                } 
             }else{
                 creep.memory.status = Status.Upgrading;
             }

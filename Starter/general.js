@@ -84,7 +84,7 @@ const BodyParts = (bodyParts) => {
         for (const bodyPart of bodyParts) {
             if (bodyPart.ignorePatterns)
                 continue;
-            if (bodyPart.amount < i)
+            if (bodyPart.amount <= i)
                 continue;
             result.push(bodyPart.part);
         }

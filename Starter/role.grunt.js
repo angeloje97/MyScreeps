@@ -75,7 +75,7 @@ exports.roleGrunt = {
         if (creep.memory.status == types_1.Status.Harvesting) {
             let sourceIndex = 0;
             let dropIndex = 0;
-            const storage = creep.room.find(FIND_STRUCTURES, {
+            const storage = Game.spawns[creep.memory.spawn].room.find(FIND_STRUCTURES, {
                 filter: s => s.structureType == STRUCTURE_STORAGE
             });
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
@@ -120,7 +120,7 @@ exports.roleGrunt = {
         //#endregion
         // #region Building
         if (creep.memory.status == types_1.Status.Building) {
-            const prioritySites = [STRUCTURE_EXTENSION, STRUCTURE_ROAD];
+            const prioritySites = [STRUCTURE_SPAWN, STRUCTURE_EXTENSION, STRUCTURE_ROAD];
             const sites = [];
             for (const prio of prioritySites) {
                 const prioSite = creep.room.find(FIND_CONSTRUCTION_SITES, {
@@ -137,6 +137,13 @@ exports.roleGrunt = {
             const closestOther = creep.pos.findClosestByPath(other);
             if (closestOther) {
                 sites.push(closestOther);
+            }
+            const otherRooms = Game.spawns[creep.memory.spawn].memory.roomsInUse;
+            for (const room of otherRooms) {
+                const otherRoomSites = room.find(FIND_CONSTRUCTION_SITES);
+                for (const site of otherRoomSites) {
+                    sites.push(site);
+                }
             }
             if (sites.length > 0) {
                 const closesSite = sites[0];

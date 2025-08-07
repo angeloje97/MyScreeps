@@ -4,8 +4,7 @@ import { CreepType, Direction, Role } from "./types";
 const variableCount = (spawn: StructureSpawn): number => {
     
     if(!spawn.memory.hasStorage) return 0;
-    
-    return spawn.memory.exitDirections.length;
+    return spawn.memory.discoverDirections.length;
 }
 
 const scoutTypes: CreepType[] = [
@@ -61,7 +60,7 @@ const discoverRoom = (creep: Creep, direction: Direction) => {
 
 export const roleScout = {
     run: (creep: Creep) => {
-        const directions = Game.spawns[creep.memory.spawn!].memory.exitDirections;
+        const directions = Game.spawns[creep.memory.spawn!].memory.discoverDirections;
 
         const direction = directions[creep.memory.index! % directions.length]
 

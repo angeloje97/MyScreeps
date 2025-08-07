@@ -6,7 +6,7 @@ const types_1 = require("./types");
 const variableCount = (spawn) => {
     if (!spawn.memory.hasStorage)
         return 0;
-    return spawn.memory.exitDirections.length;
+    return spawn.memory.discoverDirections.length;
 };
 const scoutTypes = [
     {
@@ -49,7 +49,7 @@ const discoverRoom = (creep, direction) => {
 };
 exports.roleScout = {
     run: (creep) => {
-        const directions = Game.spawns[creep.memory.spawn].memory.exitDirections;
+        const directions = Game.spawns[creep.memory.spawn].memory.discoverDirections;
         const direction = directions[creep.memory.index % directions.length];
         discoverRoom(creep, direction);
     },

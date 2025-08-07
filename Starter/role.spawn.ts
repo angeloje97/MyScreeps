@@ -1,6 +1,6 @@
 
 
-import { adjacentRoomName } from "./general";
+import { adjacentRoom, adjacentRoomName } from "./general";
 import { Direction } from "./types";
 
 //#region  Resources
@@ -117,6 +117,25 @@ const handleMap = (spawn: StructureSpawn) => {
         spawn.memory.exitDirections = exitDirections(spawn);
     }
 
+    const discoverDirections: Direction[] = [];
+
+    for(const dir of spawn.memory.exitDirections){
+        const room = adjacentRoom(spawn.room, dir);
+
+        if(!room){
+            discoverDirections.push(dir);
+            continue;
+        }
+
+        const spawns = room.find(FIND_STRUCTURES, {
+            filter: s => s.structureType == STRUCTURE_SPAWN
+        })
+
+        if(spawns.length == 0) discoverDirections.push(dir);
+    }
+
+    spawn.memory.discoverDirections = discoverDirections;
+
     handleStorage(spawn);
 };
 
@@ -130,6 +149,8 @@ const handleRooms = (spawn: StructureSpawn) => {
         const roomName = adjacentRoomName(spawn.room, dir);
         
         const room = Game.rooms[roomName]
+
+
         if(room){
             const otherSpawn = room.find(FIND_STRUCTURES, {
                 filter: s => s.structureType == STRUCTURE_SPAWN
@@ -174,12 +195,10 @@ const handleRooms = (spawn: StructureSpawn) => {
 //#endregion
 const roleSpawn = {
     handleSpawn: (spawn: StructureSpawn) => {
+        handleMap(spawn);
         handleRooms(spawn);
         handleMiningNodes(spawn);
         handleDrops(spawn);
-        handleMap(spawn);
-
-
     }
 }
 

@@ -84,6 +84,20 @@ const handleMap = (spawn) => {
     if (!spawn.memory.exitDirections) {
         spawn.memory.exitDirections = exitDirections(spawn);
     }
+    const discoverDirections = [];
+    for (const dir of spawn.memory.exitDirections) {
+        const room = (0, general_1.adjacentRoom)(spawn.room, dir);
+        if (!room) {
+            discoverDirections.push(dir);
+            continue;
+        }
+        const spawns = room.find(FIND_STRUCTURES, {
+            filter: s => s.structureType == STRUCTURE_SPAWN
+        });
+        if (spawns.length == 0)
+            discoverDirections.push(dir);
+    }
+    spawn.memory.discoverDirections = discoverDirections;
     handleStorage(spawn);
 };
 const handleRooms = (spawn) => {
@@ -125,10 +139,10 @@ const handleRooms = (spawn) => {
 //#endregion
 const roleSpawn = {
     handleSpawn: (spawn) => {
+        handleMap(spawn);
         handleRooms(spawn);
         handleMiningNodes(spawn);
         handleDrops(spawn);
-        handleMap(spawn);
     }
 };
 module.exports = roleSpawn;

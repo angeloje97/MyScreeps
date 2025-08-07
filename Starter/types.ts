@@ -24,6 +24,7 @@ declare global {
     exitDirections: Direction[],
     roomsInUse: Room[],
     roomInDanger: Room[],
+    discoverDirections: Direction[],
     
     //Properties
     roadLevelsPlaced: boolean[],

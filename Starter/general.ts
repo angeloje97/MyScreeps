@@ -96,7 +96,7 @@ export const BodyParts = (bodyParts: BodyPartProperty[]): BodyPartConstant[] => 
   for(let i = 0; i < highestIndex; i++){
     for(const bodyPart of bodyParts){
       if(bodyPart.ignorePatterns) continue;
-      if(bodyPart.amount < i) continue;
+      if(bodyPart.amount <= i) continue;
 
       result.push(bodyPart.part);
     }
